@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
+    var cpuEngine: CpuEngine
+    var buffer: UnsafeMutablePointer<UInt8>
+    init() {
+        self.cpuEngine = CpuEngine()
+        self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 4 * 224 * 256)
+        cpuEngine.start()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(frameBuffer: get_ram(self.cpuEngine.cpu), buffer: self.buffer)
         }
     }
 }
