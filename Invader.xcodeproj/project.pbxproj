@@ -14,7 +14,6 @@
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
 		EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
-		EA91F5BF2A40F55E00ECEB5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BE2A40F55E00ECEB5A /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,7 +41,6 @@
 		EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvaderApp.swift; sourceTree = "<group>"; };
 		EA91F5B92A40F55D00ECEB5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		EA91F5BE2A40F55E00ECEB5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,17 +93,8 @@
 				EA91F5B92A40F55D00ECEB5A /* ContentView.swift */,
 				EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */,
 				EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */,
-				EA91F5BD2A40F55E00ECEB5A /* Preview Content */,
 			);
 			path = Invader;
-			sourceTree = "<group>";
-		};
-		EA91F5BD2A40F55E00ECEB5A /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				EA91F5BE2A40F55E00ECEB5A /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -169,7 +158,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA50656C2A4B8B1E005B939E /* invaders in Resources */,
-				EA91F5BF2A40F55E00ECEB5A /* Preview Assets.xcassets in Resources */,
 				EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -313,7 +301,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Invader/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -346,7 +334,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Invader/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;

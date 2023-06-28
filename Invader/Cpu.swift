@@ -41,7 +41,7 @@ func output_callback(port: UInt8, value: UInt8) {
 }
 
 class CpuEngine {
-    var cpu: OpaquePointer
+    let cpu: OpaquePointer
     var interrupt: UInt8 = 1
     init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))

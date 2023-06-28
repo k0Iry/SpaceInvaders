@@ -9,8 +9,8 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
-    var cpuEngine: CpuEngine
-    var buffer: UnsafeMutablePointer<UInt8>
+    let cpuEngine: CpuEngine
+    let buffer: UnsafeMutablePointer<UInt8>
     init() {
         self.cpuEngine = CpuEngine()
         self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 4 * 224 * 256)
