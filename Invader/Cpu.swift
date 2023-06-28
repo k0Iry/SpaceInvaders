@@ -53,7 +53,7 @@ class CpuEngine {
         // thread for delivering the interrupts
         Thread {
             let timer = Timer(timeInterval: 1.0/60, repeats: true) {_ in
-                send_interrupt(self.interrupt)
+                send_interrupt(self.interrupt, false)
                 self.interrupt = self.interrupt == 1 ? 2 : 1
             }
             RunLoop.current.add(timer, forMode: RunLoop.Mode.common)
