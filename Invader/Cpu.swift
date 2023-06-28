@@ -8,11 +8,11 @@
 import Foundation
 
 
-var shift0: UInt8 = 0
-var shift1: UInt8 = 0
-var shift_offset: UInt8 = 0
+private var shift0: UInt8 = 0
+private var shift1: UInt8 = 0
+private var shift_offset: UInt8 = 0
 
-func input_callback(port: UInt8) -> UInt8 {
+private func input_callback(port: UInt8) -> UInt8 {
     var ret: UInt8 = 0
     switch port {
     case 0:
@@ -28,7 +28,7 @@ func input_callback(port: UInt8) -> UInt8 {
     return ret
 }
 
-func output_callback(port: UInt8, value: UInt8) {
+private func output_callback(port: UInt8, value: UInt8) {
     switch port {
     case 2:
         shift_offset = value & 0x7
@@ -42,7 +42,7 @@ func output_callback(port: UInt8, value: UInt8) {
 
 class CpuEngine {
     let cpu: OpaquePointer
-    var interrupt: UInt8 = 1
+    private var interrupt: UInt8 = 1
     init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
