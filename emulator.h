@@ -50,6 +50,8 @@ void run(struct Cpu8080 *cpu);
  */
 void send_interrupt(uint8_t interrupt, bool allow_nested_interrupt);
 
+void pause_start(void);
+
 /**
  * # Safety
  * This function should be safe for accessing video ram

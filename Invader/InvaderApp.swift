@@ -10,16 +10,14 @@ import SwiftUI
 @main
 struct InvaderApp: App {
     private let cpuEngine: CpuEngine
-    private let drawingBuffer: UnsafeMutablePointer<UInt8>
     init() {
         self.cpuEngine = CpuEngine()
-        self.drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 2 * 224 * 256)
         cpuEngine.start()
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(ram: get_ram(cpuEngine.cpu), drawingBuffer: drawingBuffer)
+            ContentView(imageUpdate: TimerViewModel(ram: get_ram(cpuEngine.cpu)), callback: cpuEngine.sendPortMessage)
         }
     }
 }

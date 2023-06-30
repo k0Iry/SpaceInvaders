@@ -40,23 +40,48 @@ private func output_callback(port: UInt8, value: UInt8) {
     }
 }
 
-class CpuEngine {
+class CpuEngine: NSObject, PortDelegate {
     let cpu: OpaquePointer
-    private var interrupt: UInt8 = 1
-    init() {
+    private var port: Port
+    private static var interrupt: UInt8 = 1
+    private var interruptTimer: Timer?
+    override init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
         self.cpu = new_cpu_instance(path, 8192, callbacks)!
+        self.port = Port()
+        super.init()
+        self.port.setDelegate(self)
+    }
+    
+    private static func startInterruptDeliveryTimer() -> Timer {
+        Timer(timeInterval: 1.0/60, repeats: true) {_ in
+            send_interrupt(interrupt, false)
+            interrupt = interrupt == 1 ? 2 : 1
+        }
+    }
+    
+    internal func handle(_ message: PortMessage) {
+        if message.msgid == 0 {
+            if let interruptTimer = interruptTimer {
+                interruptTimer.invalidate()
+            }
+        } else {
+            interruptTimer = Self.startInterruptDeliveryTimer()
+            RunLoop.current.add(interruptTimer!, forMode: RunLoop.Mode.common)
+        }
+    }
+    
+    func sendPortMessage(_ msgId: UInt32) {
+        let message = PortMessage(send: self.port, receive: self.port, components: nil)
+        message.msgid = msgId
+        message.send(before: Date.now)
     }
     
     func start() {
-        // thread for delivering the interrupts
+        // thread for delivering the interrupts, using Port to control interrupt timer
         Thread {
-            let timer = Timer(timeInterval: 1.0/60, repeats: true) {_ in
-                send_interrupt(self.interrupt, false)
-                self.interrupt = self.interrupt == 1 ? 2 : 1
-            }
-            RunLoop.current.add(timer, forMode: RunLoop.Mode.common)
+            RunLoop.current.add(self.port, forMode: RunLoop.Mode.default)
             RunLoop.current.run()
         }.start()
         
