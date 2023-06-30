@@ -13,7 +13,7 @@ struct InvaderApp: App {
     private let drawingBuffer: UnsafeMutablePointer<UInt8>
     init() {
         self.cpuEngine = CpuEngine()
-        self.drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 4 * 224 * 256)
+        self.drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 2 * 224 * 256)
         cpuEngine.start()
     }
     
