@@ -22,7 +22,7 @@ class TimerViewModel: ObservableObject {
     
     init(ram: UnsafePointer<UInt8>) {
         self.ram = ram
-        self.drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: 2 * width * height)
+        self.drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * height)
     }
     
     func startRefreshing() {
@@ -36,16 +36,16 @@ class TimerViewModel: ObservableObject {
         for i in 0..<width {
             for j in stride(from: 0, to: height, by: 8) {
                 let pixel = frameBuffer[i * height / 8 + j / 8]
-                let offset = (height - 1 - j) * width * 2 + i * 2
+                let offset = (height - 1 - j) * width + i
                 var ptr = drawingBuffer.advanced(by: offset)
                 for p in 0..<8 {
                     let rgb: UInt8 = (pixel & (1 << p)) != 0 ? 0xff : 0
                     ptr.pointee = rgb
-                    ptr -= width * 2
+                    ptr -= width
                 }
             }
         }
-        let bitmapContext = CGContext(data: drawingBuffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 2, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
+        let bitmapContext = CGContext(data: drawingBuffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGImageAlphaInfo.none.rawValue)
         return bitmapContext?.makeImage()
     }
     
@@ -90,7 +90,7 @@ struct ContentView: View {
                     buttonTitle = "Start"
                 }
                 start = !start
-                pause_start()
+                pause_start_execution()
             })
         }
     }
