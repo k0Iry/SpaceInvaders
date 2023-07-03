@@ -17,7 +17,7 @@ struct InvaderApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(imageUpdate: TimerViewModel(ram: get_ram(cpuEngine.cpu)), callback: cpuEngine.sendPortMessage)
+            ContentView(imageUpdate: DisplayLink(ram: get_ram(cpuEngine.cpu)), callback: cpuEngine.sendPortMessage)
         }
     }
 }

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import CoreGraphics
 
 private var shift0: UInt8 = 0
 private var shift1: UInt8 = 0
@@ -55,7 +55,7 @@ class CpuEngine: NSObject, PortDelegate {
     }
     
     private static func startInterruptDeliveryTimer() -> Timer {
-        Timer(timeInterval: 1.0/60, repeats: true) {_ in
+        Timer(timeInterval: 1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate, repeats: true) {_ in
             send_interrupt(interrupt, false)
             interrupt = interrupt == 1 ? 2 : 1
         }
