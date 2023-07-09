@@ -43,6 +43,7 @@ struct Cpu8080 *new_cpu_instance(const char *rom_path,
 void run(struct Cpu8080 *cpu);
 
 /**
+ * Always called from a separated thread!
  * It is crucial that we don't borrow our CPU instance
  * since this function will be called from FFI thread.
  * (e.g. threads spawned by Swift language where we
@@ -50,6 +51,12 @@ void run(struct Cpu8080 *cpu);
  */
 void send_interrupt(uint8_t interrupt, bool allow_nested_interrupt);
 
+/**
+ * Channel for the control of execution, we can either start
+ * or pause the execution of instructions, again we
+ * shall not borrow the CPU instance same as `send_interrupt`
+ * since this function should always be called from a separated thread
+ */
 void pause_start_execution(void);
 
 /**
@@ -57,6 +64,7 @@ void pause_start_execution(void);
  * This function should be safe for accessing video ram
  */
 const uint8_t *get_ram(struct Cpu8080 *cpu);
+
 
 
 #endif /* emulator_h */

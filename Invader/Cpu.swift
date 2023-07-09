@@ -73,7 +73,7 @@ class CpuEngine: NSObject, PortDelegate {
     }
     
     func sendPortMessage(_ msgId: UInt32) {
-        let message = PortMessage(send: self.port, receive: self.port, components: nil)
+        let message = PortMessage(send: port, receive: port, components: nil)
         message.msgid = msgId
         message.send(before: Date.now)
     }
