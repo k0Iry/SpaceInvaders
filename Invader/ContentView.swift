@@ -59,6 +59,42 @@ class DisplayLink: ObservableObject {
     }
 }
 
+struct KeyEvents: NSViewRepresentable {
+    class KeyView: NSView {
+        override var acceptsFirstResponder: Bool { true }
+        override func keyDown(with event: NSEvent) {
+            switch event.keyCode {
+            case 8: inport1 |= 0x01 // coin
+            case 1: inport1 |= 0x04 // start
+            case 123: inport1 |= 0x20 // left
+            case 124: inport1 |= 0x40 // right
+            case 49: inport1 |= 0x10 // fire
+            default: break
+            }
+        }
+        override func keyUp(with event: NSEvent) {
+            switch event.keyCode {
+            case 8: inport1 &= ~0x01
+            case 1: inport1 &= ~0x04
+            case 123: inport1 &= ~0x20
+            case 124: inport1 &= ~0x40
+            case 49: inport1 &= ~0x10
+            default: break
+            }
+        }
+    }
+    
+    func makeNSView(context: Context) -> NSView {
+        let view = KeyView()
+        DispatchQueue.main.async {
+            view.window?.makeFirstResponder(view)
+        }
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
 struct ContentView: View {
     
     @StateObject private var imageUpdate: DisplayLink
@@ -91,7 +127,7 @@ struct ContentView: View {
                 start = !start
                 pause_start_execution()
             })
-        }
+        }.background(KeyEvents())
     }
 }
 

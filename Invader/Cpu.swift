@@ -11,6 +11,7 @@ import CoreGraphics
 private var shift0: UInt8 = 0
 private var shift1: UInt8 = 0
 private var shift_offset: UInt8 = 0
+var inport1: UInt8 = 0
 
 private func input_callback(port: UInt8) -> UInt8 {
     var ret: UInt8 = 0
@@ -18,7 +19,7 @@ private func input_callback(port: UInt8) -> UInt8 {
     case 0:
         return 1
     case 1:
-        return 0
+        return inport1
     case 3:
         let v: UInt16 = UInt16(shift1) << 8 | UInt16(shift0)
         ret = UInt8(truncatingIfNeeded: v >> (8 - shift_offset))
