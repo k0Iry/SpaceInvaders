@@ -10,7 +10,7 @@ import SwiftUI
 private let width = 224
 private let height = 256
 
-class DisplayLink: ObservableObject {
+internal final class DisplayLink: ObservableObject {
     private let ram: UnsafePointer<UInt8>
     
     private let drawingBuffer: UnsafeMutablePointer<UInt8>
@@ -60,32 +60,24 @@ class DisplayLink: ObservableObject {
 }
 
 struct KeyEvents: NSViewRepresentable {
+    let keyInputControlDelegate: KeyInputControl
+    init(keyInputControlDelegate: KeyInputControl) {
+        self.keyInputControlDelegate = keyInputControlDelegate
+    }
     class KeyView: NSView {
+        var owner: KeyEvents?
         override var acceptsFirstResponder: Bool { true }
         override func keyDown(with event: NSEvent) {
-            switch event.keyCode {
-            case 8: inport1 |= 0x01 // coin
-            case 1: inport1 |= 0x04 // start
-            case 123: inport1 |= 0x20 // left
-            case 124: inport1 |= 0x40 // right
-            case 49: inport1 |= 0x10 // fire
-            default: break
-            }
+            owner?.keyInputControlDelegate.keyDown(with: event.keyCode)
         }
         override func keyUp(with event: NSEvent) {
-            switch event.keyCode {
-            case 8: inport1 &= ~0x01
-            case 1: inport1 &= ~0x04
-            case 123: inport1 &= ~0x20
-            case 124: inport1 &= ~0x40
-            case 49: inport1 &= ~0x10
-            default: break
-            }
+            owner?.keyInputControlDelegate.keyUp(with: event.keyCode)
         }
     }
     
     func makeNSView(context: Context) -> NSView {
         let view = KeyView()
+        view.owner = self
         DispatchQueue.main.async {
             view.window?.makeFirstResponder(view)
         }
@@ -102,11 +94,13 @@ struct ContentView: View {
     @State private var start = false
     @State private var buttonTitle = "Start"
     
-    private let notifyInterruptCallback: (UInt32) -> Void
+    private let interruptControlDelegate: InterruptControl
+    private let keyInputControlDelegate: KeyInputControl
     
-    init(imageUpdate: DisplayLink, callback: @escaping (UInt32) -> Void) {
+    init(imageUpdate: DisplayLink, interruptControlDelegate: InterruptControl, keyInputControlDelegate: KeyInputControl) {
         _imageUpdate = StateObject(wrappedValue: imageUpdate)
-        self.notifyInterruptCallback = callback
+        self.interruptControlDelegate = interruptControlDelegate
+        self.keyInputControlDelegate = keyInputControlDelegate
     }
     
     var body: some View {
@@ -117,17 +111,17 @@ struct ContentView: View {
             Button(buttonTitle, action: {
                 if !start {
                     imageUpdate.startRefreshing()
-                    notifyInterruptCallback(1)
-                    buttonTitle = "Stop"
+                    interruptControlDelegate.enableInterrupt(1)
+                    buttonTitle = "Pause"
                 } else {
                     imageUpdate.stopRefreshing()
-                    notifyInterruptCallback(0)
+                    interruptControlDelegate.enableInterrupt(0)
                     buttonTitle = "Start"
                 }
                 start = !start
                 pause_start_execution()
             })
-        }.background(KeyEvents())
+        }.background(KeyEvents(keyInputControlDelegate: keyInputControlDelegate))
     }
 }
 

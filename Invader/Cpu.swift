@@ -11,7 +11,7 @@ import CoreGraphics
 private var shift0: UInt8 = 0
 private var shift1: UInt8 = 0
 private var shift_offset: UInt8 = 0
-var inport1: UInt8 = 0
+private var inport1: UInt8 = 0
 
 private func input_callback(port: UInt8) -> UInt8 {
     var ret: UInt8 = 0
@@ -41,7 +41,16 @@ private func output_callback(port: UInt8, value: UInt8) {
     }
 }
 
-class CpuEngine: NSObject, PortDelegate {
+protocol InterruptControl {
+    func enableInterrupt(_ command: UInt32) -> Void
+}
+
+protocol KeyInputControl {
+    func keyUp(with keyCode: UInt16)
+    func keyDown(with keyCode: UInt16)
+}
+
+final class CpuEngine: NSObject, PortDelegate, InterruptControl, KeyInputControl {
     let cpu: OpaquePointer
     private var port: Port
     private static var interrupt: UInt8 = 1
@@ -73,10 +82,32 @@ class CpuEngine: NSObject, PortDelegate {
         }
     }
     
-    func sendPortMessage(_ msgId: UInt32) {
+    func enableInterrupt(_ command: UInt32) {
         let message = PortMessage(send: port, receive: port, components: nil)
-        message.msgid = msgId
+        message.msgid = command
         message.send(before: Date.now)
+    }
+    
+    func keyUp(with keyCode: UInt16) {
+        switch keyCode {
+        case 8: inport1 &= ~0x01
+        case 1: inport1 &= ~0x04
+        case 123: inport1 &= ~0x20
+        case 124: inport1 &= ~0x40
+        case 49: inport1 &= ~0x10
+        default: break
+        }
+    }
+    
+    func keyDown(with keyCode: UInt16) {
+        switch keyCode {
+        case 8: inport1 |= 0x01 // coin
+        case 1: inport1 |= 0x04 // start
+        case 123: inport1 |= 0x20 // left
+        case 124: inport1 |= 0x40 // right
+        case 49: inport1 |= 0x10 // fire
+        default: break
+        }
     }
     
     func start() {

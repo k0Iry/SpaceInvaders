@@ -10,14 +10,16 @@ import SwiftUI
 @main
 struct InvaderApp: App {
     private let cpuEngine: CpuEngine
+    private let invaderView: ContentView
     init() {
         self.cpuEngine = CpuEngine()
+        self.invaderView = ContentView(imageUpdate: DisplayLink(ram: get_ram(cpuEngine.cpu)), interruptControlDelegate: cpuEngine, keyInputControlDelegate: cpuEngine)
         cpuEngine.start()
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(imageUpdate: DisplayLink(ram: get_ram(cpuEngine.cpu)), callback: cpuEngine.sendPortMessage)
+            invaderView
         }
     }
 }
