@@ -75,13 +75,13 @@ final class CpuController: NSObject, PortDelegate, KeyInputControl, ObservableOb
         self.port.setDelegate(self)
         // setup refreshing callbacks
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-        CVDisplayLinkSetOutputHandler(displayLink!, { (displayLink, timestamp, timestamp1, options, flags ) in
+        CVDisplayLinkSetOutputHandler(displayLink!) { (displayLink, timestamp, timestamp1, options, flags ) in
             let image = drawImage(frameBuffer: self.ram.advanced(by: 0x400), drawingBuffer: self.drawingBuffer)
             DispatchQueue.main.async {
                 self.bitmapImage = image
             }
             return kCVReturnSuccess
-        })
+        }
     }
     
     private static func startInterruptDeliveryTimer() -> Timer {
