@@ -15,6 +15,8 @@ S => Start a new game round
 
 <- => Move Right
 
+Space => Fire!
+
 ![invaders](./invaders.gif)
 
 Thanks to http://www.emulator101.com
