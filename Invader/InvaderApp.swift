@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
-    private let cpuEngine: CpuEngine
+    private let cpuController: CpuController
     private let invaderView: ContentView
     init() {
-        self.cpuEngine = CpuEngine()
-        self.invaderView = ContentView(imageUpdate: DisplayLink(ram: get_ram(cpuEngine.cpu)), interruptControlDelegate: cpuEngine, keyInputControlDelegate: cpuEngine)
-        cpuEngine.start()
+        self.cpuController = CpuController()
+        self.invaderView = ContentView(cpuController: cpuController)
+        cpuController.start()
     }
     
     var body: some Scene {
