@@ -8,8 +8,8 @@
 import SwiftUI
 
 private struct KeyEvents: NSViewRepresentable {
-    private let keyInputControlDelegate: KeyInputControl
-    init(keyInputControlDelegate: KeyInputControl) {
+    private let keyInputControlDelegate: KeyInputControlDelegate
+    init(keyInputControlDelegate: KeyInputControlDelegate) {
         self.keyInputControlDelegate = keyInputControlDelegate
     }
     private class KeyView: NSView {
@@ -37,21 +37,14 @@ private struct KeyEvents: NSViewRepresentable {
 
 struct ContentView: View {
     
-    @StateObject private var cpuController: CpuController
-    
-    private let keyInputControlDelegate: KeyInputControl
-    
-    init(cpuController: CpuController) {
-        _cpuController = StateObject(wrappedValue: cpuController)
-        self.keyInputControlDelegate = cpuController
-    }
+    @StateObject private var cpuController = CpuController().start()
     
     var body: some View {
         VStack {
             if let image = cpuController.bitmapImage {
                 Image(image, scale: 1.0, label: Text("Invaders"))
             }
-        }.frame(width: CGFloat(width), height: CGFloat(height)).background(KeyEvents(keyInputControlDelegate: keyInputControlDelegate))
+        }.frame(width: CGFloat(width), height: CGFloat(height)).background(KeyEvents(keyInputControlDelegate: cpuController))
     }
 }
 

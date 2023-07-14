@@ -42,7 +42,7 @@ private func output_callback(port: UInt8, value: UInt8) {
     }
 }
 
-protocol KeyInputControl {
+protocol KeyInputControlDelegate {
     func keyUp(with keyCode: UInt16)
     func keyDown(with keyCode: UInt16)
 }
@@ -50,13 +50,13 @@ protocol KeyInputControl {
 // interrupt signal, 1 means half screen rendering, 2 means full screen
 private var interrupt: UInt8 = 1
 
-final class CpuController: NSObject, PortDelegate, KeyInputControl, ObservableObject {
+final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, ObservableObject {
     private let cpu: OpaquePointer
     
     // mach port for controlling the timer which delivers interrupt signals
     private var port = Port()
     private var interruptTimer: Timer?
-    private var interruptEnabled = false
+    private var shouldDeliveryInterrupt = false
     
     // CVDisplayLink for publishing the bitmap calculated from vram buffer
     private var displayLink: CVDisplayLink?
@@ -136,8 +136,8 @@ final class CpuController: NSObject, PortDelegate, KeyInputControl, ObservableOb
         case .left: inport1 |= 0x20
         case .right: inport1 |= 0x40
         case .fire: inport1 |= 0x10
-        case .pause: interruptEnabled = !interruptEnabled
-            if interruptEnabled {
+        case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
+            if shouldDeliveryInterrupt {
                 enableInterrupt(1)
                 CVDisplayLinkStart(displayLink!)
             } else {
@@ -149,7 +149,7 @@ final class CpuController: NSObject, PortDelegate, KeyInputControl, ObservableOb
         }
     }
     
-    func start() {
+    func start() -> Self {
         Thread {
             RunLoop.current.add(self.port, forMode: RunLoop.Mode.default)
             RunLoop.current.run()
@@ -158,6 +158,7 @@ final class CpuController: NSObject, PortDelegate, KeyInputControl, ObservableOb
         Thread {
             run(self.cpu)
         }.start()
+        return self
     }
 }
 
