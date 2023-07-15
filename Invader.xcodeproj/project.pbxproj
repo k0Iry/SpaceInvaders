@@ -12,7 +12,7 @@
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
 		EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
-		EAE836C02A62B9820027664E /* libemulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAE836BF2A62B9670027664E /* libemulator.a */; };
+		EAE227972A635057004E7F9D /* libemulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAE227962A63504A004E7F9D /* libemulator.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +26,7 @@
 		EA91F5B92A40F55D00ECEB5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
-		EAE836BF2A62B9670027664E /* libemulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libemulator.a; path = ../emulator/target/release/libemulator.a; sourceTree = "<group>"; };
+		EAE227962A63504A004E7F9D /* libemulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libemulator.a; path = ../emulator/target/release/libemulator.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EAE836C02A62B9820027664E /* libemulator.a in Frameworks */,
+				EAE227972A635057004E7F9D /* libemulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +44,7 @@
 		EA3C66132A4B59D9002B87C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EAE836BF2A62B9670027664E /* libemulator.a */,
+				EAE227962A63504A004E7F9D /* libemulator.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
