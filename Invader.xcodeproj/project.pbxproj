@@ -7,32 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EA3C66152A4B59DA002B87C6 /* libemulator.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3C66142A4B59DA002B87C6 /* libemulator.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
-		EA3C66162A4B59DA002B87C6 /* libemulator.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = EA3C66142A4B59DA002B87C6 /* libemulator.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA50656C2A4B8B1E005B939E /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
 		EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
+		EAE836C02A62B9820027664E /* libemulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAE836BF2A62B9670027664E /* libemulator.a */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		EA3C66172A4B59DA002B87C6 /* Embed Libraries */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				EA3C66162A4B59DA002B87C6 /* libemulator.dylib in Embed Libraries */,
-			);
-			name = "Embed Libraries";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		EA3C66122A4B59C8002B87C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		EA3C66142A4B59DA002B87C6 /* libemulator.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libemulator.dylib; path = ../emulator/target/debug/libemulator.dylib; sourceTree = "<group>"; };
 		EA3C66202A4B5C33002B87C6 /* Invader-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-Bridging-Header.h"; sourceTree = "<group>"; };
 		EA3C66212A4B5C33002B87C6 /* emulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = emulator.h; sourceTree = "<group>"; };
 		EA5065692A4B6CC6005B939E /* CpuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CpuController.swift; sourceTree = "<group>"; };
@@ -42,6 +26,7 @@
 		EA91F5B92A40F55D00ECEB5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
+		EAE836BF2A62B9670027664E /* libemulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libemulator.a; path = ../emulator/target/release/libemulator.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,7 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA3C66152A4B59DA002B87C6 /* libemulator.dylib in Frameworks */,
+				EAE836C02A62B9820027664E /* libemulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +44,7 @@
 		EA3C66132A4B59D9002B87C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EA3C66142A4B59DA002B87C6 /* libemulator.dylib */,
+				EAE836BF2A62B9670027664E /* libemulator.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -107,7 +92,6 @@
 				EA91F5B02A40F55D00ECEB5A /* Sources */,
 				EA91F5B12A40F55D00ECEB5A /* Frameworks */,
 				EA91F5B22A40F55D00ECEB5A /* Resources */,
-				EA3C66172A4B59DA002B87C6 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -307,6 +291,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Invader/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -341,6 +326,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Invader/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

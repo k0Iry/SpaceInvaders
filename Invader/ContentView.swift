@@ -45,9 +45,9 @@ struct ContentView: View {
                 Image(image, scale: 1.0, label: Text("Invaders"))
                     .resizable()
                     .interpolation(.none)
-                    .frame(width: cpuController.imageSize.width, height: cpuController.imageSize.height)
             }
         }
+        .frame(width: cpuController.imageSize.width, height: cpuController.imageSize.height)
         .background(KeyEvents(keyInputControlDelegate: cpuController))
     }
 }
