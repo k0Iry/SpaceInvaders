@@ -43,8 +43,12 @@ struct ContentView: View {
         VStack {
             if let image = cpuController.bitmapImage {
                 Image(image, scale: 1.0, label: Text("Invaders"))
+                    .resizable()
+                    .interpolation(.none)
+                    .frame(width: cpuController.imageSize.width, height: cpuController.imageSize.height)
             }
-        }.frame(width: CGFloat(width), height: CGFloat(height)).background(KeyEvents(keyInputControlDelegate: cpuController))
+        }
+        .background(KeyEvents(keyInputControlDelegate: cpuController))
     }
 }
 

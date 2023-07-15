@@ -5,17 +5,21 @@ CPU engine is written in Rust [here](https://github.com/k0Iry/8080-Emulator-in-R
 
 Play:
 
+```
 P => Pause or resume/start the game console
 
 C => Drop a coin for player 1
 
 S => Start a new game round
 
--> => Move left
+<- => Move left
 
-<- => Move Right
+-> => Move Right
 
 Space => Fire!
+
+1, 2, 3 => Scale the game screen to x1, x2, x3
+```
 
 ![invaders](./invaders.gif)
 
