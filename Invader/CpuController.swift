@@ -47,9 +47,6 @@ protocol KeyInputControlDelegate {
     func keyDown(with keyCode: UInt16)
 }
 
-// interrupt signal, 1 means half screen rendering, 2 means full screen
-private var interrupt: UInt8 = 1
-
 final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, ObservableObject {
     private let cpu: OpaquePointer
     
@@ -57,6 +54,9 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     private var port = Port()
     private var interruptTimer: Timer?
     private var shouldDeliveryInterrupt = false
+    
+    // vblank interrupt signal, 1 means half screen rendering, 2 means full screen
+    private var vblankInterrupt: UInt8 = 1
     
     // CVDisplayLink for publishing the bitmap calculated from vram buffer
     private var displayLink: CVDisplayLink?
@@ -85,20 +85,18 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         }
     }
     
-    private static func startInterruptDeliveryTimer() -> Timer {
+    private func interruptDeliveryTimer() -> Timer {
         Timer(timeInterval: 1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate, repeats: true) {_ in
-            send_interrupt(interrupt, false)
-            interrupt = interrupt == 1 ? 2 : 1
+            send_interrupt(self.vblankInterrupt, false)
+            self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
         }
     }
     
     internal func handle(_ message: PortMessage) {
         if message.msgid == 0 {
-            if let interruptTimer = interruptTimer {
-                interruptTimer.invalidate()
-            }
+            interruptTimer!.invalidate()
         } else {
-            interruptTimer = Self.startInterruptDeliveryTimer()
+            interruptTimer = interruptDeliveryTimer()
             RunLoop.current.add(interruptTimer!, forMode: RunLoop.Mode.common)
         }
     }
