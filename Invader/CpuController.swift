@@ -65,7 +65,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     private let ram: UnsafePointer<UInt8>
     
     @Published var bitmapImage: CGImage?
-    @Published var imageSize = CGSize(width: width, height: height)
     
     override init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
@@ -111,9 +110,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     private enum KeyMap: UInt16 {
         case start = 1
         case coin = 8
-        case x1 = 18
-        case x2 = 19
-        case x3 = 20
         case pause = 35
         case fire = 49
         case left = 123
@@ -138,9 +134,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         case .left: inport1 |= 0x20
         case .right: inport1 |= 0x40
         case .fire: inport1 |= 0x10
-        case .x1: imageSize = CGSize(width: width, height: height)
-        case .x2: imageSize = CGSize(width: width * 2, height: height * 2)
-        case .x3: imageSize = CGSize(width: width * 3, height: height * 3)
         case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             if shouldDeliveryInterrupt {
                 enableInterrupt(1)
@@ -166,9 +159,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         return self
     }
 }
-
-private let width = 224
-private let height = 256
 
 private func drawImage(frameBuffer: UnsafePointer<UInt8>, drawingBuffer: UnsafeMutablePointer<UInt8>) -> CGImage? {
     for i in 0..<width {
