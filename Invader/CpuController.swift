@@ -9,16 +9,14 @@ import Foundation
 import CoreGraphics
 import CoreVideo
 
-private var shift0: UInt8 = 0
-private var shift1: UInt8 = 0
-private var shift_offset: UInt8 = 0
-private var inport1: UInt8 = 0
+private var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
+private var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
+private var shift_offset: UInt8 = 0 // Writing to port 2 (bits 0,1,2) sets the offset for the 8 bit result
+private var inport1: UInt8 = 0 // we only do 1 player for now...
 
 private func input_callback(port: UInt8) -> UInt8 {
     var ret: UInt8 = 0
     switch port {
-    case 0:
-        return 1
     case 1:
         return inport1
     case 3:
@@ -33,10 +31,11 @@ private func input_callback(port: UInt8) -> UInt8 {
 private func output_callback(port: UInt8, value: UInt8) {
     switch port {
     case 2:
-        shift_offset = value & 0x7
+        shift_offset = value & 0x7 // shift amount (3 bits)
     case 4:
         shift0 = shift1
         shift1 = value
+        // port 3, 5 are for sounds currently not supported yet
     default:
         break
     }
@@ -65,7 +64,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     private let ram: UnsafePointer<UInt8>
     
     @Published var bitmapImage: CGImage?
-    @Published var imageSize = CGSize(width: width, height: height)
     
     override init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
@@ -111,9 +109,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     private enum KeyMap: UInt16 {
         case start = 1
         case coin = 8
-        case x1 = 18
-        case x2 = 19
-        case x3 = 20
         case pause = 35
         case fire = 49
         case left = 123
@@ -138,9 +133,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         case .left: inport1 |= 0x20
         case .right: inport1 |= 0x40
         case .fire: inport1 |= 0x10
-        case .x1: imageSize = CGSize(width: width, height: height)
-        case .x2: imageSize = CGSize(width: width * 2, height: height * 2)
-        case .x3: imageSize = CGSize(width: width * 3, height: height * 3)
         case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             if shouldDeliveryInterrupt {
                 enableInterrupt(1)
@@ -166,9 +158,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         return self
     }
 }
-
-private let width = 224
-private let height = 256
 
 private func drawImage(frameBuffer: UnsafePointer<UInt8>, drawingBuffer: UnsafeMutablePointer<UInt8>) -> CGImage? {
     for i in 0..<width {

@@ -17,8 +17,6 @@ S => Start a new game round
 -> => Move Right
 
 Space => Fire!
-
-1, 2, 3 => Scale the game screen to x1, x2, x3
 ```
 
 ![invaders](./invaders.gif)
