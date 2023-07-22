@@ -49,7 +49,7 @@ protocol KeyInputControlDelegate {
 final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, ObservableObject {
     private let cpu: OpaquePointer
     
-    // mach port for controlling the timer which delivers interrupt signals
+    // channel for controlling the timer which delivers interrupt signals
     private var port = Port()
     private var interruptTimer: Timer?
     private var shouldDeliveryInterrupt = false
@@ -72,9 +72,16 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         self.ram = get_ram(self.cpu)
         super.init()
         self.port.setDelegate(self)
-        // setup refreshing callbacks
+        setupDisplayLink()
+    }
+    
+    deinit {
+        drawingBuffer.deallocate()
+    }
+    
+    private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-        CVDisplayLinkSetOutputHandler(displayLink!) { (displayLink, timestamp, timestamp1, options, flags ) in
+        CVDisplayLinkSetOutputHandler(displayLink!) { (displayLink, timestamp, timestamp1, options, flags) in
             let image = drawImage(frameBuffer: self.ram.advanced(by: 0x400), drawingBuffer: self.drawingBuffer)
             DispatchQueue.main.async {
                 self.bitmapImage = image
@@ -92,20 +99,21 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     
     internal func handle(_ message: PortMessage) {
         if message.msgid == 0 {
-            interruptTimer!.invalidate()
+            interruptTimer?.invalidate()
         } else {
             interruptTimer = interruptDeliveryTimer()
-            RunLoop.current.add(interruptTimer!, forMode: RunLoop.Mode.common)
+            RunLoop.current.add(interruptTimer!, forMode: .common)
         }
     }
     
-    private func enableInterrupt(_ command: UInt32) {
+    private func enableInterrupt(_ enable: Bool) {
+        let command: UInt32 = enable ? 1 : 0
         let message = PortMessage(send: port, receive: port, components: nil)
         message.msgid = command
         message.send(before: Date.now)
     }
     
-    // KeyInputControl, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
+    // KeyInputControlDelegate, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
     private enum KeyMap: UInt16 {
         case start = 1
         case coin = 8
@@ -135,10 +143,10 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         case .fire: inport1 |= 0x10
         case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             if shouldDeliveryInterrupt {
-                enableInterrupt(1)
+                enableInterrupt(true)
                 CVDisplayLinkStart(displayLink!)
             } else {
-                enableInterrupt(0)
+                enableInterrupt(false)
                 CVDisplayLinkStop(displayLink!)
             }
             pause_start_execution()
@@ -148,7 +156,7 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     
     func start() -> Self {
         Thread {
-            RunLoop.current.add(self.port, forMode: RunLoop.Mode.default)
+            RunLoop.current.add(self.port, forMode: .default)
             RunLoop.current.run()
         }.start()
         
