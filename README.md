@@ -3,6 +3,8 @@ Space invaders implemented in Rust and Swift
 
 CPU engine is written in Rust [here](https://github.com/k0Iry/8080-Emulator-in-Rust).
 
+You can also found the disassembled ROM source code in `disassemble.asm` file.
+
 Play:
 
 ```
