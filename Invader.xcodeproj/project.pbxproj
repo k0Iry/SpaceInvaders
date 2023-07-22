@@ -17,6 +17,7 @@
 
 /* Begin PBXFileReference section */
 		EA1937CA2A6486C300065C48 /* libemulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libemulator.a; path = ../emulator/target/release/libemulator.a; sourceTree = "<group>"; };
+		EA1937CC2A6BEA9200065C48 /* disassemble.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; path = disassemble.asm; sourceTree = "<group>"; };
 		EA3C66122A4B59C8002B87C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EA3C66202A4B5C33002B87C6 /* Invader-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-Bridging-Header.h"; sourceTree = "<group>"; };
 		EA3C66212A4B5C33002B87C6 /* emulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = emulator.h; sourceTree = "<group>"; };
@@ -52,6 +53,7 @@
 		EA91F5AB2A40F55D00ECEB5A = {
 			isa = PBXGroup;
 			children = (
+				EA1937CC2A6BEA9200065C48 /* disassemble.asm */,
 				EA50656B2A4B8B1E005B939E /* invaders */,
 				EA3C66212A4B5C33002B87C6 /* emulator.h */,
 				EA91F5B62A40F55D00ECEB5A /* Invader */,
