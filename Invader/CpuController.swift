@@ -142,11 +142,10 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         case .right: inport1 |= 0x40
         case .fire: inport1 |= 0x10
         case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
+            enableInterrupt(shouldDeliveryInterrupt)
             if shouldDeliveryInterrupt {
-                enableInterrupt(true)
                 CVDisplayLinkStart(displayLink!)
             } else {
-                enableInterrupt(false)
                 CVDisplayLinkStop(displayLink!)
             }
             pause_start_execution()
