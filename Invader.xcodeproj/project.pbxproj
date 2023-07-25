@@ -7,16 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EA1937CB2A6486D200065C48 /* libemulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1937CA2A6486C300065C48 /* libemulator.a */; };
 		EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA50656C2A4B8B1E005B939E /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
 		EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
+		EAF472892A70481700075E04 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAF472882A70480200075E04 /* libi8080emulator.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EA1937CA2A6486C300065C48 /* libemulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libemulator.a; path = ../emulator/target/release/libemulator.a; sourceTree = "<group>"; };
 		EA1937CC2A6BEA9200065C48 /* disassemble.asm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm.asm; path = disassemble.asm; sourceTree = "<group>"; };
 		EA3C66122A4B59C8002B87C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EA3C66202A4B5C33002B87C6 /* Invader-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -28,6 +27,7 @@
 		EA91F5B92A40F55D00ECEB5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
+		EAF472882A70480200075E04 /* libi8080emulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator.a; path = ../emulator/target/release/libi8080emulator.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA1937CB2A6486D200065C48 /* libemulator.a in Frameworks */,
+				EAF472892A70481700075E04 /* libi8080emulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,7 +45,7 @@
 		EA3C66132A4B59D9002B87C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EA1937CA2A6486C300065C48 /* libemulator.a */,
+				EAF472882A70480200075E04 /* libi8080emulator.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
