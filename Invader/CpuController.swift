@@ -108,6 +108,14 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         }
     }
     
+    private func enableDisplayLink(_ enable: Bool) {
+        if enable {
+            CVDisplayLinkStart(displayLink!)
+        } else {
+            CVDisplayLinkStop(displayLink!)
+        }
+    }
+    
     // KeyInputControlDelegate, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
     private enum KeyMap: UInt16 {
         case start = 1
@@ -138,11 +146,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         case .fire: inport1 |= 0x10
         case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)
-            if shouldDeliveryInterrupt {
-                CVDisplayLinkStart(displayLink!)
-            } else {
-                CVDisplayLinkStop(displayLink!)
-            }
+            enableDisplayLink(shouldDeliveryInterrupt)
             pause_start_execution()
         default: break
         }
