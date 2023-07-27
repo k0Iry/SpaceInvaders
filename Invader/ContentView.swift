@@ -37,7 +37,7 @@ private struct KeyEvents: NSViewRepresentable {
 
 struct ContentView: View {
     
-    @StateObject private var cpuController = CpuController().start()
+    @StateObject private var cpuController = CpuController()
     
     var body: some View {
         VStack {

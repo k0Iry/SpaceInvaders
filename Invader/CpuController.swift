@@ -46,12 +46,11 @@ protocol KeyInputControlDelegate {
     func keyDown(with keyCode: UInt16)
 }
 
-final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, ObservableObject {
+final class CpuController: KeyInputControlDelegate, ObservableObject {
     private let cpu: OpaquePointer
     
-    // channel for controlling the timer which delivers interrupt signals
-    private var port = Port()
-    private var interruptTimer: Timer?
+    let interruptTimerQueue = DispatchQueue(label: "me.kljsandjb.interrupt")
+    private var interruptTimer: DispatchSourceTimer?
     private var shouldDeliveryInterrupt = false
     
     // vblank interrupt signal, 1 means half screen rendering, 2 means full screen
@@ -65,14 +64,16 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
     
     @Published var bitmapImage: CGImage?
     
-    override init() {
+    init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
         self.cpu = new_cpu_instance(path, 8192, callbacks)!
         self.ram = get_ram(self.cpu)
-        super.init()
-        self.port.setDelegate(self)
         setupDisplayLink()
+        setupInterruptTimer()
+        Thread {
+            run(self.cpu)
+        }.start()
     }
     
     deinit {
@@ -90,27 +91,21 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
         }
     }
     
-    private func interruptDeliveryTimer() -> Timer {
-        Timer(timeInterval: 1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate, repeats: true) {_ in
+    private func setupInterruptTimer() {
+        interruptTimer = DispatchSource.makeTimerSource(queue: interruptTimerQueue)
+        interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate))
+        interruptTimer?.setEventHandler {
             send_interrupt(self.vblankInterrupt, false)
             self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
         }
     }
     
-    internal func handle(_ message: PortMessage) {
-        if message.msgid == 0 {
-            interruptTimer?.invalidate()
-        } else {
-            interruptTimer = interruptDeliveryTimer()
-            RunLoop.current.add(interruptTimer!, forMode: .common)
-        }
-    }
-    
     private func enableInterrupt(_ enable: Bool) {
-        let command: UInt32 = enable ? 1 : 0
-        let message = PortMessage(send: port, receive: port, components: nil)
-        message.msgid = command
-        message.send(before: Date.now)
+        if enable {
+            interruptTimer?.resume()
+        } else {
+            interruptTimer?.suspend()
+        }
     }
     
     // KeyInputControlDelegate, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
@@ -151,18 +146,6 @@ final class CpuController: NSObject, PortDelegate, KeyInputControlDelegate, Obse
             pause_start_execution()
         default: break
         }
-    }
-    
-    func start() -> Self {
-        Thread {
-            RunLoop.current.add(self.port, forMode: .default)
-            RunLoop.current.run()
-        }.start()
-        
-        Thread {
-            run(self.cpu)
-        }.start()
-        return self
     }
 }
 
