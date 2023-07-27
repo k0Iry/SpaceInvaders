@@ -6,8 +6,12 @@
 //
 
 import Foundation
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#else
 import CoreGraphics
 import CoreVideo
+#endif
 
 private var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
 private var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
@@ -42,8 +46,17 @@ private func output_callback(port: UInt8, value: UInt8) {
 }
 
 protocol KeyInputControlDelegate {
-    func keyUp(with keyCode: UInt16)
-    func keyDown(with keyCode: UInt16)
+    func press(_ action: Action)
+    func release(_ action: Action)
+}
+
+enum Action: UInt16 {
+    case start = 1
+    case coin = 8
+    case pause = 35
+    case fire = 49
+    case left = 123
+    case right = 124
 }
 
 final class CpuController: KeyInputControlDelegate, ObservableObject {
@@ -57,19 +70,28 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     private var vblankInterrupt: UInt8 = 1
     
     // CVDisplayLink for publishing the bitmap calculated from vram buffer
+#if os(iOS) || os(tvOS) || os(watchOS)
+    private var displayLink: CADisplayLink?
+#else
     private var displayLink: CVDisplayLink?
+#endif
     private let drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * height)
     
     private let ram: UnsafePointer<UInt8>
     
     @Published var bitmapImage: CGImage?
+#if os(iOS) || os(tvOS) || os(watchOS)
+    @Published var title: String = "Start"
+#endif
     
     init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
         self.cpu = new_cpu_instance(path, 8192, callbacks)!
         self.ram = get_ram(self.cpu)
+#if os(macOS)
         setupDisplayLink()
+#endif
         setupInterruptTimer()
         Thread {
             run(self.cpu)
@@ -80,20 +102,26 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         drawingBuffer.deallocate()
     }
     
+#if os(macOS)
     private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
         CVDisplayLinkSetOutputHandler(displayLink!) { (displayLink, timestamp, timestamp1, options, flags) in
-            let image = drawImage(frameBuffer: self.ram.advanced(by: 0x400), drawingBuffer: self.drawingBuffer)
+            let image = drawBitmapImage(frameBuffer: self.ram.advanced(by: 0x400), drawingBuffer: self.drawingBuffer)
             DispatchQueue.main.async {
                 self.bitmapImage = image
             }
             return kCVReturnSuccess
         }
     }
+#endif
     
     private func setupInterruptTimer() {
         interruptTimer = DispatchSource.makeTimerSource(queue: interruptTimerQueue)
+#if os(iOS) || os(tvOS) || os(watchOS)
+        interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/120))
+#else
         interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate))
+#endif
         interruptTimer?.setEventHandler {
             send_interrupt(self.vblankInterrupt, false)
             self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
@@ -110,50 +138,62 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     
     private func enableDisplayLink(_ enable: Bool) {
         if enable {
+#if os(iOS) || os(tvOS) || os(watchOS)
+            displayLink = CADisplayLink(target: self, selector: #selector(drawImage))
+            displayLink?.add(to: RunLoop.main, forMode: .default)
+            title = "Pause"
+#else
             CVDisplayLinkStart(displayLink!)
+#endif
         } else {
+#if os(iOS) || os(tvOS) || os(watchOS)
+            displayLink?.invalidate()
+            title = "Start"
+#else
             CVDisplayLinkStop(displayLink!)
+#endif
         }
     }
     
     // KeyInputControlDelegate, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
-    private enum KeyMap: UInt16 {
-        case start = 1
-        case coin = 8
-        case pause = 35
-        case fire = 49
-        case left = 123
-        case right = 124
-    }
     
-    func keyUp(with keyCode: UInt16) {
-        switch KeyMap(rawValue: keyCode) {
-        case .coin: inport1 &= ~0x01
-        case .start: inport1 &= ~0x04
-        case .left: inport1 &= ~0x20
-        case .right: inport1 &= ~0x40
-        case .fire: inport1 &= ~0x10
-        default: break
-        }
-    }
-    
-    func keyDown(with keyCode: UInt16) {
-        switch KeyMap(rawValue: keyCode) {
-        case .coin: inport1 |= 0x01
-        case .start: inport1 |= 0x04
-        case .left: inport1 |= 0x20
-        case .right: inport1 |= 0x40
-        case .fire: inport1 |= 0x10
-        case .pause: shouldDeliveryInterrupt = !shouldDeliveryInterrupt
+    func press(_ action: Action) {
+        switch action {
+        case .pause:
+            shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)
             enableDisplayLink(shouldDeliveryInterrupt)
             pause_start_execution()
+        case .coin: inport1 |= 0x01
+        case .start: inport1 |= 0x04
+        case .fire: inport1 |= 0x10
+        case .left: inport1 |= 0x20
+        case .right: inport1 |= 0x40
+        }
+        
+    }
+    
+    func release(_ action: Action) {
+        switch action {
+        case .coin: inport1 &= ~0x01
+        case .start: inport1 &= ~0x04
+        case .fire: inport1 &= ~0x10
+        case .left: inport1 &= ~0x20
+        case .right: inport1 &= ~0x40
         default: break
         }
     }
+    
+    
+#if os(iOS) || os(tvOS) || os(watchOS)
+    @objc func drawImage(_ displayLink: CADisplayLink) -> Void {
+        let frameBuffer = self.ram.advanced(by: 0x400)
+        bitmapImage = drawBitmapImage(frameBuffer: frameBuffer, drawingBuffer: drawingBuffer)
+    }
+#endif
 }
 
-private func drawImage(frameBuffer: UnsafePointer<UInt8>, drawingBuffer: UnsafeMutablePointer<UInt8>) -> CGImage? {
+private func drawBitmapImage(frameBuffer: UnsafePointer<UInt8>, drawingBuffer: UnsafeMutablePointer<UInt8>) -> CGImage? {
     for i in 0..<width {
         for j in stride(from: 0, to: height, by: 8) {
             let pixel = frameBuffer[i * height / 8 + j / 8]
