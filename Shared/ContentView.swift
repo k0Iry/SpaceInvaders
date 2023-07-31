@@ -99,6 +99,9 @@ struct ContentView: View {
                     }
                 })
             }.padding().buttonStyle(.borderedProminent)
+            Button("Restart", action: {
+                cpuController.press(.restart)
+            }).buttonStyle(.borderedProminent)
 #endif
         }.padding()
 #if os(macOS)

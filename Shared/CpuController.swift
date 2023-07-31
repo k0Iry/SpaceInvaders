@@ -57,6 +57,7 @@ enum Action: UInt16 {
     case fire = 49
     case left = 123
     case right = 124
+    case restart = 15
 }
 
 final class CpuController: KeyInputControlDelegate, ObservableObject {
@@ -159,6 +160,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     
     func press(_ action: Action) {
         switch action {
+        case .restart: send_message(Message(tag: Restart, .init(.init())))
         case .pause:
             shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)

@@ -21,6 +21,8 @@ S => Start a new game round
 -> => Move Right
 
 Space => Fire!
+
+R => Restart the whole game (this will erase all the game progress)
 ```
 
 ![invaders](./invaders.gif)
