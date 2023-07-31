@@ -165,7 +165,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
             shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)
             enableDisplayLink(shouldDeliveryInterrupt)
-            send_message(Message(tag: ExecutionControl, .init(.init())))
+            send_message(Message(tag: Suspend, .init(.init())))
         case .coin: inport1 |= 0x01
         case .start: inport1 |= 0x04
         case .fire: inport1 |= 0x10

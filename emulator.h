@@ -34,7 +34,7 @@ typedef struct IrqMessage {
 
 typedef enum Message_Tag {
   Interrupt,
-  ExecutionControl,
+  Suspend,
   Restart,
 } Message_Tag;
 
