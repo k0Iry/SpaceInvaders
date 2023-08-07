@@ -31,6 +31,7 @@ R => Restart the whole game (this will erase all the game progress)
 ## Play(on iOS)
 
 There are buttons to follow the controls.
+
 ![screenshot-ios](./screenshot-ios.png)
 
 Thanks to http://www.emulator101.com
