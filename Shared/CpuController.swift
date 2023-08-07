@@ -149,7 +149,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         } else {
 #if os(iOS) || os(tvOS) || os(watchOS)
             displayLink?.invalidate()
-            title = "Start"
+            title = "Resume"
 #else
             CVDisplayLinkStop(displayLink!)
 #endif
