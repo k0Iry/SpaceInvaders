@@ -27,23 +27,21 @@ typedef struct IoCallbacks {
   void (*output)(uint8_t port, uint8_t value);
 } IoCallbacks;
 
-typedef struct IrqMessage {
-  uint8_t irq_no;
-  bool allow_nested_interrupt;
-} IrqMessage;
-
 typedef enum Message_Tag {
   Interrupt,
   Suspend,
   Restart,
 } Message_Tag;
 
+typedef struct Interrupt_Body {
+  uint8_t irq_no;
+  bool allow_nested_interrupt;
+} Interrupt_Body;
+
 typedef struct Message {
   Message_Tag tag;
   union {
-    struct {
-      struct IrqMessage interrupt;
-    };
+    Interrupt_Body interrupt;
   };
 } Message;
 
@@ -76,7 +74,6 @@ const uint8_t *get_ram(struct Cpu8080 *cpu);
  * cannot enforce any ownership mechanism)
  */
 void send_message(struct Message message);
-
 
 
 

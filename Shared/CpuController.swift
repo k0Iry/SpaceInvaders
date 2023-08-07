@@ -124,7 +124,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate))
 #endif
         interruptTimer?.setEventHandler {
-            send_message(Message(tag: Interrupt, .init(.init(interrupt: IrqMessage(irq_no: self.vblankInterrupt, allow_nested_interrupt: false)))))
+            send_message(Message(tag: Interrupt, .init(interrupt: .init(irq_no: self.vblankInterrupt, allow_nested_interrupt: false))))
             self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
         }
     }
@@ -160,12 +160,12 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     
     func press(_ action: Action) {
         switch action {
-        case .restart: send_message(Message(tag: Restart, .init(.init())))
+        case .restart: send_message(Message(tag: Restart, .init()))
         case .pause:
             shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)
             enableDisplayLink(shouldDeliveryInterrupt)
-            send_message(Message(tag: Suspend, .init(.init())))
+            send_message(Message(tag: Suspend, .init()))
         case .coin: inport1 |= 0x01
         case .start: inport1 |= 0x04
         case .fire: inport1 |= 0x10
