@@ -25,13 +25,13 @@ Space => Fire!
 R => Restart the whole game (this will erase all the game progress)
 ```
 
-![invaders](./invaders.gif)
+![invaders](./screenshots/invaders.gif)
 
 
 ## Play(on iOS)
 
 There are buttons to follow the controls.
 
-![screenshot-ios](./screenshot-ios.png)
+![screenshot-ios](./screenshots/screenshot-ios.png)
 
 Thanks to http://www.emulator101.com
