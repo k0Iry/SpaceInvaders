@@ -63,6 +63,8 @@ enum Action: UInt16 {
 final class CpuController: KeyInputControlDelegate, ObservableObject {
     private let cpu: OpaquePointer
     
+    private let sender: UnsafeMutableRawPointer
+    
     let interruptTimerQueue = DispatchQueue(label: "me.kljsandjb.interrupt")
     private var interruptTimer: DispatchSourceTimer?
     private var shouldDeliveryInterrupt = false
@@ -88,14 +90,16 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
-        self.cpu = new_cpu_instance(path, 8192, callbacks)!
+        let resources = new_cpu_instance(path, 8192, callbacks)
+        self.cpu = resources.cpu
+        self.sender = resources.sender
         self.ram = get_ram(self.cpu)
 #if os(macOS)
         setupDisplayLink()
 #endif
         setupInterruptTimer()
         Thread {
-            run(self.cpu)
+            run(self.cpu, self.sender)
         }.start()
     }
     
@@ -124,7 +128,7 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate))
 #endif
         interruptTimer?.setEventHandler {
-            send_message(Message(tag: Interrupt, .init(interrupt: .init(irq_no: self.vblankInterrupt, allow_nested_interrupt: false))))
+            send_message(self.sender, Message(tag: Interrupt, .init(interrupt: .init(irq_no: self.vblankInterrupt, allow_nested_interrupt: false))))
             self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
         }
     }
@@ -160,12 +164,12 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     
     func press(_ action: Action) {
         switch action {
-        case .restart: send_message(Message(tag: Restart, .init()))
+        case .restart: send_message(self.sender, Message(tag: Restart, .init()))
         case .pause:
             shouldDeliveryInterrupt = !shouldDeliveryInterrupt
             enableInterrupt(shouldDeliveryInterrupt)
             enableDisplayLink(shouldDeliveryInterrupt)
-            send_message(Message(tag: Suspend, .init()))
+            send_message(self.sender, Message(tag: Suspend, .init()))
         case .coin: inport1 |= 0x01
         case .start: inport1 |= 0x04
         case .fire: inport1 |= 0x10
