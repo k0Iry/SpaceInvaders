@@ -44,11 +44,11 @@ typedef struct IoCallbacks {
    * IN port, pass port number back to app
    * set the calculated result back to reg_a
    */
-  uint8_t (*input)(uint8_t port);
+  uint8_t (*input)(const void *io_object, uint8_t port);
   /**
    * OUT port value, pass port & value back to app
    */
-  void (*output)(uint8_t port, uint8_t value);
+  void (*output)(const void *io_object, uint8_t port, uint8_t value);
 } IoCallbacks;
 
 /**
@@ -58,7 +58,8 @@ typedef struct IoCallbacks {
  */
 struct CpuSender new_cpu_instance(const char *rom_path,
                                   uintptr_t ram_size,
-                                  struct IoCallbacks callbacks);
+                                  struct IoCallbacks callbacks,
+                                  const void *io_object);
 
 /**
  * # Safety
@@ -73,6 +74,7 @@ void run(struct Cpu8080 *cpu, void *sender);
 const uint8_t *get_ram(struct Cpu8080 *cpu);
 
 /**
+ * # Safety
  * Always called from a separated thread!
  * It is crucial that we don't borrow our CPU instance
  * since this function will be called from FFI thread.
@@ -80,6 +82,7 @@ const uint8_t *get_ram(struct Cpu8080 *cpu);
  * cannot enforce any ownership mechanism)
  */
 void send_message(void *sender, struct Message message);
+
 
 
 

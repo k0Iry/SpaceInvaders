@@ -13,32 +13,36 @@ import CoreGraphics
 import CoreVideo
 #endif
 
-private var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
-private var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
-private var shift_offset: UInt8 = 0 // Writing to port 2 (bits 0,1,2) sets the offset for the 8 bit result
-private var inport1: UInt8 = 0 // we only do 1 player for now...
+private class IoObject {
+    var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
+    var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
+    var shift_offset: UInt8 = 0 // Writing to port 2 (bits 0,1,2) sets the offset for the 8 bit result
+    var inport1: UInt8 = 0 // we only do 1 player for now...
+}
 
-private func input_callback(port: UInt8) -> UInt8 {
+private func input_callback(io_object: UnsafeRawPointer!, port: UInt8) -> UInt8 {
+    let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
     var ret: UInt8 = 0
     switch port {
     case 1:
-        return inport1
+        return ioObject.inport1
     case 3:
-        let v: UInt16 = UInt16(shift1) << 8 | UInt16(shift0)
-        ret = UInt8(truncatingIfNeeded: v >> (8 - shift_offset))
+        let v: UInt16 = UInt16(ioObject.shift1) << 8 | UInt16(ioObject.shift0)
+        ret = UInt8(truncatingIfNeeded: v >> (8 - ioObject.shift_offset))
     default:
         break
     }
     return ret
 }
 
-private func output_callback(port: UInt8, value: UInt8) {
+private func output_callback(io_object: UnsafeRawPointer!, port: UInt8, value: UInt8) {
+    let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
     switch port {
     case 2:
-        shift_offset = value & 0x7 // shift amount (3 bits)
+        ioObject.shift_offset = value & 0x7 // shift amount (3 bits)
     case 4:
-        shift0 = shift1
-        shift1 = value
+        ioObject.shift0 = ioObject.shift1
+        ioObject.shift1 = value
         // port 3, 5 are for sounds currently not supported yet
     default:
         break
@@ -83,12 +87,14 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     
     private let ram: UnsafePointer<UInt8>
     
+    private var ioObject = IoObject()
+    
     @Published var bitmapImage: CGImage?
     
     init() {
-        let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
+        let callbacks = IoCallbacks(input: input_callback, output: output_callback)
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
-        let resources = new_cpu_instance(path, 8192, callbacks)
+        let resources = new_cpu_instance(path, 8192, callbacks, &ioObject)
         self.cpu = resources.cpu
         self.sender = resources.sender
         self.ram = get_ram(self.cpu)
@@ -161,22 +167,22 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
             enableInterrupt(shouldDeliveryInterrupt)
             enableDisplayLink(shouldDeliveryInterrupt)
             send_message(self.sender, Message(tag: Suspend, .init()))
-        case .coin: inport1 |= 0x01
-        case .start: inport1 |= 0x04
-        case .fire: inport1 |= 0x10
-        case .left: inport1 |= 0x20
-        case .right: inport1 |= 0x40
+        case .coin: ioObject.inport1 |= 0x01
+        case .start: ioObject.inport1 |= 0x04
+        case .fire: ioObject.inport1 |= 0x10
+        case .left: ioObject.inport1 |= 0x20
+        case .right: ioObject.inport1 |= 0x40
         }
         
     }
     
     func release(_ action: Action) {
         switch action {
-        case .coin: inport1 &= ~0x01
-        case .start: inport1 &= ~0x04
-        case .fire: inport1 &= ~0x10
-        case .left: inport1 &= ~0x20
-        case .right: inport1 &= ~0x40
+        case .coin: ioObject.inport1 &= ~0x01
+        case .start: ioObject.inport1 &= ~0x04
+        case .fire: ioObject.inport1 &= ~0x10
+        case .left: ioObject.inport1 &= ~0x20
+        case .right: ioObject.inport1 &= ~0x40
         default: break
         }
     }
