@@ -11,16 +11,11 @@ let width = 224
 let height = 256
 
 struct InvadersView: View {
-    
-    @ObservedObject private var cpuController: CpuController
-    
-    init(cpuController: CpuController) {
-        self.cpuController = cpuController
-    }
+    @Binding public private(set) var bitmapImage: CGImage?
     
     var body: some View {
         VStack {
-            if let image = cpuController.bitmapImage {
+            if let image = bitmapImage {
                 Image(image, scale: 1.0, label: Text("Invaders"))
                     .resizable()
                     .interpolation(.none)
