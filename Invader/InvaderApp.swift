@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
+    private let cpuController = CpuController()
     var body: some Scene {
         WindowGroup {
-            ContentView().frame(minWidth: CGFloat(width), maxWidth: .infinity, minHeight: CGFloat(height), maxHeight: .infinity)
+            InvadersView(cpuController: cpuController).frame(minWidth: CGFloat(width), maxWidth: .infinity, minHeight: CGFloat(height), maxHeight: .infinity)
+                .background(KeyEvents(keyInputControlDelegate: cpuController))
         }
     }
 }

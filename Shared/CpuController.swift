@@ -50,6 +50,7 @@ protocol KeyInputControlDelegate {
     func release(_ action: Action)
 }
 
+// macOS keycodes: https://stackoverflow.com/a/69908491/6289529
 enum Action: UInt16 {
     case start = 1
     case coin = 8
@@ -83,9 +84,6 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
     private let ram: UnsafePointer<UInt8>
     
     @Published var bitmapImage: CGImage?
-#if os(iOS) || os(tvOS) || os(watchOS)
-    @Published var title: String = "Start"
-#endif
     
     init() {
         let callbacks = IoCallbacks(input: input_callback(port:), output: output_callback(port:value:))
@@ -101,10 +99,6 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
         Thread {
             run(self.cpu, self.sender)
         }.start()
-    }
-    
-    deinit {
-        drawingBuffer.deallocate()
     }
     
 #if os(macOS)
@@ -146,22 +140,19 @@ final class CpuController: KeyInputControlDelegate, ObservableObject {
 #if os(iOS) || os(tvOS) || os(watchOS)
             displayLink = CADisplayLink(target: self, selector: #selector(drawImage))
             displayLink?.add(to: RunLoop.main, forMode: .default)
-            title = "Pause"
 #else
             CVDisplayLinkStart(displayLink!)
 #endif
         } else {
 #if os(iOS) || os(tvOS) || os(watchOS)
-            displayLink?.invalidate()
-            title = "Resume"
+            displayLink?.remove(from: RunLoop.main, forMode: .default)
 #else
             CVDisplayLinkStop(displayLink!)
 #endif
         }
     }
     
-    // KeyInputControlDelegate, macOS keycodes: https://stackoverflow.com/a/69908491/6289529
-    
+    // KeyInputControlDelegate
     func press(_ action: Action) {
         switch action {
         case .restart: send_message(self.sender, Message(tag: Restart, .init()))

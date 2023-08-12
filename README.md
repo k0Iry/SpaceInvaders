@@ -1,16 +1,14 @@
 # SpaceInvaders
-Space invaders implemented in Rust and Swift.
+SpaceInvaders in SwiftUI.
 
-This repo contains both iOS and macOS application.
+This project mainly serves as a working DEMO for the 8080 emulation library in Rust [here](https://github.com/k0Iry/8080-Emulator-in-Rust).
 
-CPU engine is written in Rust [here](https://github.com/k0Iry/8080-Emulator-in-Rust).
-
-To build, you need to obtain the Rust library and header file.
+It provides a way of using the Rust library.
 
 ## Play(on macOS):
 
 ```
-P => Pause or resume/start the game console
+P => Start or pause/resume the game console
 
 C => Drop a coin for player 1
 
@@ -20,7 +18,7 @@ S => Start a new game round
 
 -> => Move Right
 
-Space => Fire!
+Space => Shoot
 
 R => Restart the whole game (this will erase all the game progress)
 ```
@@ -34,4 +32,4 @@ There are buttons to follow the controls.
 
 ![screenshot-ios](./screenshots/screenshot-ios.png)
 
-Thanks to http://www.emulator101.com
+Thanks to [emulator101](http://www.emulator101.com).

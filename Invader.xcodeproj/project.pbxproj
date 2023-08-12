@@ -9,15 +9,17 @@
 /* Begin PBXBuildFile section */
 		EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */; };
 		EA2D3AB32A72C5E400DC5F40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */; };
-		EA2D3ABE2A72C75A00DC5F40 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
+		EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
 		EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA2D3AC02A72C86F00DC5F40 /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
 		EA2D3AC72A72CD6A00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC62A72CD5900DC5F40 /* libi8080emulator.a */; };
 		EA2D3AC92A72CF5F00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC82A72CF5000DC5F40 /* libi8080emulator.a */; };
 		EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA50656C2A4B8B1E005B939E /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
+		EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91A9312A877E6A00BB119C /* ControlPanel.swift */; };
+		EA91A9342A8782A500BB119C /* KeyInputControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91A9332A8782A500BB119C /* KeyInputControlView.swift */; };
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
-		EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* ContentView.swift */; };
+		EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -33,9 +35,11 @@
 		EA3C66212A4B5C33002B87C6 /* emulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = emulator.h; sourceTree = "<group>"; };
 		EA5065692A4B6CC6005B939E /* CpuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CpuController.swift; sourceTree = "<group>"; };
 		EA50656B2A4B8B1E005B939E /* invaders */ = {isa = PBXFileReference; lastKnownFileType = file; path = invaders; sourceTree = "<group>"; };
+		EA91A9312A877E6A00BB119C /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
+		EA91A9332A8782A500BB119C /* KeyInputControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInputControlView.swift; sourceTree = "<group>"; };
 		EA91F5B42A40F55D00ECEB5A /* Invader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Invader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvaderApp.swift; sourceTree = "<group>"; };
-		EA91F5B92A40F55D00ECEB5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvadersView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +67,7 @@
 		EA2D3AAD2A72C5E300DC5F40 /* Invader-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				EA91A9312A877E6A00BB119C /* ControlPanel.swift */,
 				EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */,
 				EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */,
 			);
@@ -73,7 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				EA5065692A4B6CC6005B939E /* CpuController.swift */,
-				EA91F5B92A40F55D00ECEB5A /* ContentView.swift */,
+				EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -115,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				EA3C66122A4B59C8002B87C6 /* Info.plist */,
+				EA91A9332A8782A500BB119C /* KeyInputControlView.swift */,
 				EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */,
 				EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */,
 				EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */,
@@ -224,8 +230,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA2D3ABE2A72C75A00DC5F40 /* ContentView.swift in Sources */,
+				EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */,
 				EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */,
+				EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */,
 				EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,7 +242,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */,
-				EA91F5BA2A40F55D00ECEB5A /* ContentView.swift in Sources */,
+				EA91A9342A8782A500BB119C /* KeyInputControlView.swift in Sources */,
+				EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */,
 				EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
