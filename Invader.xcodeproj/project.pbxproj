@@ -14,6 +14,8 @@
 		EA2D3AC02A72C86F00DC5F40 /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
 		EA2D3AC72A72CD6A00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC62A72CD5900DC5F40 /* libi8080emulator.a */; };
 		EA2D3AC92A72CF5F00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC82A72CF5000DC5F40 /* libi8080emulator.a */; };
+		EA3E67D32A88D9B90041C771 /* IOModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */; };
+		EA3E67D42A88D9B90041C771 /* IOModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */; };
 		EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA50656C2A4B8B1E005B939E /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
 		EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91A9312A877E6A00BB119C /* ControlPanel.swift */; };
@@ -33,6 +35,7 @@
 		EA3C66122A4B59C8002B87C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EA3C66202A4B5C33002B87C6 /* Invader-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		EA3C66212A4B5C33002B87C6 /* emulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = emulator.h; sourceTree = "<group>"; };
+		EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOModelProtocol.swift; sourceTree = "<group>"; };
 		EA5065692A4B6CC6005B939E /* CpuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CpuController.swift; sourceTree = "<group>"; };
 		EA50656B2A4B8B1E005B939E /* invaders */ = {isa = PBXFileReference; lastKnownFileType = file; path = invaders; sourceTree = "<group>"; };
 		EA91A9312A877E6A00BB119C /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
@@ -78,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				EA5065692A4B6CC6005B939E /* CpuController.swift */,
+				EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */,
 				EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */,
 			);
 			path = Shared;
@@ -231,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */,
+				EA3E67D42A88D9B90041C771 /* IOModelProtocol.swift in Sources */,
 				EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */,
 				EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */,
 				EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */,
@@ -242,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */,
+				EA3E67D32A88D9B90041C771 /* IOModelProtocol.swift in Sources */,
 				EA91A9342A8782A500BB119C /* KeyInputControlView.swift in Sources */,
 				EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */,
 				EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */,

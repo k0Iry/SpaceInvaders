@@ -13,40 +13,48 @@ import CoreGraphics
 import CoreVideo
 #endif
 
-private class IoObject {
-    var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
-    var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
-    var shift_offset: UInt8 = 0 // Writing to port 2 (bits 0,1,2) sets the offset for the 8 bit result
+final private class IoObject: IoModelProtocol {
+    private var shift0: UInt8 = 0 // lower  8 bits of 16-bits word on screen
+    private var shift1: UInt8 = 0 // higher 8 bits of 16-bits word on screen
+    private var shift_offset: UInt8 = 0 // Writing to port 2 (bits 0,1,2) sets the offset for the 8 bit result
     var inport1: UInt8 = 0 // we only do 1 player for now...
+    
+    func input(port: UInt8) -> UInt8 {
+        var ret: UInt8 = 0
+        switch port {
+        case 1:
+            return inport1
+        case 3:
+            let v: UInt16 = UInt16(shift1) << 8 | UInt16(shift0)
+            ret = UInt8(truncatingIfNeeded: v >> (8 - shift_offset))
+        default:
+            break
+        }
+        return ret
+    }
+    
+    func output(port: UInt8, value: UInt8) {
+        switch port {
+        case 2:
+            shift_offset = value & 0x7 // shift amount (3 bits)
+        case 4:
+            shift0 = shift1
+            shift1 = value
+            // port 3, 5 are for sounds currently not supported yet
+        default:
+            break
+        }
+    }
 }
 
 private func input_callback(io_object: UnsafeRawPointer!, port: UInt8) -> UInt8 {
     let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
-    var ret: UInt8 = 0
-    switch port {
-    case 1:
-        return ioObject.inport1
-    case 3:
-        let v: UInt16 = UInt16(ioObject.shift1) << 8 | UInt16(ioObject.shift0)
-        ret = UInt8(truncatingIfNeeded: v >> (8 - ioObject.shift_offset))
-    default:
-        break
-    }
-    return ret
+    return ioObject.input(port: port)
 }
 
 private func output_callback(io_object: UnsafeRawPointer!, port: UInt8, value: UInt8) {
     let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
-    switch port {
-    case 2:
-        ioObject.shift_offset = value & 0x7 // shift amount (3 bits)
-    case 4:
-        ioObject.shift0 = ioObject.shift1
-        ioObject.shift1 = value
-        // port 3, 5 are for sounds currently not supported yet
-    default:
-        break
-    }
+    ioObject.output(port: port, value: value)
 }
 
 protocol KeyInputControlDelegate {
