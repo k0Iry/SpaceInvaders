@@ -13,7 +13,7 @@ struct Invader_iOSApp: App {
     var body: some Scene {
         WindowGroup {
             InvadersView(bitmapImage: $bitmapProducer.bitmapImage)
-            ControlPanel(keyInputDelegate: bitmapProducer.keyInputDelegate!)
+            ControlPanel(keyInputDelegate: bitmapProducer.keyInputDelegate)
         }
     }
 }

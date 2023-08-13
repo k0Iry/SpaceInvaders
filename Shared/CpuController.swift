@@ -130,11 +130,7 @@ final class CpuController: KeyInputControlDelegate {
     
     private func setupInterruptTimer() {
         interruptTimer = DispatchSource.makeTimerSource(queue: interruptTimerQueue)
-#if os(iOS) || os(tvOS) || os(watchOS)
         interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/120))
-#else
-        interruptTimer?.schedule(deadline: .now(), repeating: Double(1.0/CGDisplayCopyDisplayMode(CGMainDisplayID())!.refreshRate))
-#endif
         interruptTimer?.setEventHandler {
             send_message(self.sender, Message(tag: Interrupt, .init(interrupt: .init(irq_no: self.vblankInterrupt, allow_nested_interrupt: false))))
             self.vblankInterrupt = self.vblankInterrupt == 1 ? 2 : 1
@@ -185,11 +181,8 @@ final internal class BitmapProducer: ObservableObject {
 #if os(macOS)
     private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-        CVDisplayLinkSetOutputHandler(displayLink!) { (displayLink, timestamp, timestamp1, options, flags) in
-            let image = self.drawBitmapImage()
-            DispatchQueue.main.async {
-                self.bitmapImage = image
-            }
+        CVDisplayLinkSetOutputHandler(displayLink!) { (_, _, _, _, _) in
+            self.drawBitmapImage()
             return kCVReturnSuccess
         }
     }
@@ -198,7 +191,7 @@ final internal class BitmapProducer: ObservableObject {
     internal func enableDisplayLink(_ enable: Bool) {
         if enable {
 #if os(iOS) || os(tvOS) || os(watchOS)
-            displayLink = CADisplayLink(target: self, selector: #selector(drawImage))
+            displayLink = CADisplayLink(target: self, selector: #selector(drawBitmapImage))
             displayLink?.add(to: RunLoop.main, forMode: .default)
 #else
             CVDisplayLinkStart(displayLink!)
@@ -212,12 +205,6 @@ final internal class BitmapProducer: ObservableObject {
         }
     }
     
-#if os(iOS) || os(tvOS) || os(watchOS)
-    @objc private func drawImage(_ displayLink: CADisplayLink) -> Void {
-        bitmapImage = drawBitmapImage()
-    }
-#endif
-    
     init(frameBuffer: UnsafePointer<UInt8>) {
         self.frameBuffer = frameBuffer
 #if os(macOS)
@@ -229,7 +216,7 @@ final internal class BitmapProducer: ObservableObject {
         drawingBuffer.deallocate()
     }
     
-    private func drawBitmapImage() -> CGImage? {
+    @objc private func drawBitmapImage() {
         for i in 0..<width {
             for j in stride(from: 0, to: height, by: 8) {
                 let pixel = frameBuffer[i * height / 8 + j / 8]
@@ -243,6 +230,13 @@ final internal class BitmapProducer: ObservableObject {
             }
         }
         let bitmapContext = CGContext(data: drawingBuffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGImageAlphaInfo.none.rawValue)
-        return bitmapContext?.makeImage()
+        let bitmapImage = bitmapContext?.makeImage()
+#if os(macOS)
+        DispatchQueue.main.async {
+            self.bitmapImage = bitmapImage
+        }
+#else
+        self.bitmapImage = bitmapImage
+#endif
     }
 }

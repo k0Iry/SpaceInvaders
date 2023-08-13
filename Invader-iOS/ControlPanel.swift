@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ControlPanel: View {
-    private let keyInputDelegate: KeyInputControlDelegate
+    private let keyInputDelegate: KeyInputControlDelegate?
     
     @State private var startButtonTitle = "Start"
     
-    init(keyInputDelegate: KeyInputControlDelegate) {
+    init(keyInputDelegate: KeyInputControlDelegate?) {
         self.keyInputDelegate = keyInputDelegate
     }
     
@@ -20,7 +20,7 @@ struct ControlPanel: View {
         VStack {
             HStack {
                 Button(startButtonTitle, action: {
-                    keyInputDelegate.press(.pause)
+                    keyInputDelegate?.press(.pause)
                     if startButtonTitle != "Pause" {
                         startButtonTitle = "Pause"
                     } else {
@@ -29,44 +29,44 @@ struct ControlPanel: View {
                 })
                 Button("Drop Coins", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
                     if pressing {
-                        keyInputDelegate.press(.coin)
+                        keyInputDelegate?.press(.coin)
                     } else {
-                        keyInputDelegate.release(.coin)
+                        keyInputDelegate?.release(.coin)
                     }
                 })
                 Button("New Game", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
                     if pressing {
-                        keyInputDelegate.press(.start)
+                        keyInputDelegate?.press(.start)
                     } else {
-                        keyInputDelegate.release(.start)
+                        keyInputDelegate?.release(.start)
                     }
                 })
             }.padding().buttonStyle(.borderedProminent)
             HStack {
                 Button("<", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
                     if pressing {
-                        keyInputDelegate.press(.left)
+                        keyInputDelegate?.press(.left)
                     } else {
-                        keyInputDelegate.release(.left)
+                        keyInputDelegate?.release(.left)
                     }
                 })
                 Button("fire🔥", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
                     if pressing {
-                        keyInputDelegate.press(.fire)
+                        keyInputDelegate?.press(.fire)
                     } else {
-                        keyInputDelegate.release(.fire)
+                        keyInputDelegate?.release(.fire)
                     }
                 })
                 Button(">", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
                     if pressing {
-                        keyInputDelegate.press(.right)
+                        keyInputDelegate?.press(.right)
                     } else {
-                        keyInputDelegate.release(.right)
+                        keyInputDelegate?.release(.right)
                     }
                 })
             }.padding().buttonStyle(.borderedProminent)
             Button("Restart", action: {
-                keyInputDelegate.press(.restart)
+                keyInputDelegate?.press(.restart)
             }).buttonStyle(.borderedProminent)
         }
     }

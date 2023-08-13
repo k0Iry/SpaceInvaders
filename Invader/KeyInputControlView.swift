@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct KeyEvents: NSViewRepresentable {
-    private let keyInputControlDelegate: KeyInputControlDelegate
-    init(keyInputControlDelegate: KeyInputControlDelegate) {
+    private let keyInputControlDelegate: KeyInputControlDelegate?
+    init(keyInputControlDelegate: KeyInputControlDelegate?) {
         self.keyInputControlDelegate = keyInputControlDelegate
     }
     private class KeyView: NSView {
@@ -17,12 +17,12 @@ struct KeyEvents: NSViewRepresentable {
         override var acceptsFirstResponder: Bool { true }
         override func keyDown(with event: NSEvent) {
             if let action = Action(rawValue: event.keyCode) {
-                owner?.keyInputControlDelegate.press(action)
+                owner?.keyInputControlDelegate?.press(action)
             }
         }
         override func keyUp(with event: NSEvent) {
             if let action = Action(rawValue: event.keyCode) {
-                owner?.keyInputControlDelegate.release(action)
+                owner?.keyInputControlDelegate?.release(action)
             }
         }
     }

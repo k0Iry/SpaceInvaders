@@ -13,7 +13,7 @@ struct InvaderApp: App {
     var body: some Scene {
         WindowGroup {
             InvadersView(bitmapImage: $bitmapProducer.bitmapImage).frame(minWidth: CGFloat(width), maxWidth: .infinity, minHeight: CGFloat(height), maxHeight: .infinity)
-                .background(KeyEvents(keyInputControlDelegate: bitmapProducer.keyInputDelegate!))
+                .background(KeyEvents(keyInputControlDelegate: bitmapProducer.keyInputDelegate))
         }
     }
 }
