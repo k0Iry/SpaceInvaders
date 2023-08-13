@@ -9,11 +9,11 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
-    @StateObject private var cpuController = CpuController()
+    @StateObject private var bitmapProducer = CpuController().bitmapProducer
     var body: some Scene {
         WindowGroup {
-            InvadersView(bitmapImage: $cpuController.bitmapImage).frame(minWidth: CGFloat(width), maxWidth: .infinity, minHeight: CGFloat(height), maxHeight: .infinity)
-                .background(KeyEvents(keyInputControlDelegate: cpuController))
+            InvadersView(bitmapImage: $bitmapProducer.bitmapImage).frame(minWidth: CGFloat(width), maxWidth: .infinity, minHeight: CGFloat(height), maxHeight: .infinity)
+                .background(KeyEvents(keyInputControlDelegate: bitmapProducer.keyInputDelegate!))
         }
     }
 }
