@@ -26,7 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EA2D3AAC2A72C5E300DC5F40 /* Invader-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Invader-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA2D3AAC2A72C5E300DC5F40 /* SpaceInvaders-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SpaceInvaders-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invader_iOSApp.swift; sourceTree = "<group>"; };
 		EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA2D3AC12A72C91A00DC5F40 /* Invader-iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -40,7 +40,7 @@
 		EA50656B2A4B8B1E005B939E /* invaders */ = {isa = PBXFileReference; lastKnownFileType = file; path = invaders; sourceTree = "<group>"; };
 		EA91A9312A877E6A00BB119C /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
 		EA91A9332A8782A500BB119C /* KeyInputControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInputControlView.swift; sourceTree = "<group>"; };
-		EA91F5B42A40F55D00ECEB5A /* Invader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Invader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA91F5B42A40F55D00ECEB5A /* SpaceInvaders.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceInvaders.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvaderApp.swift; sourceTree = "<group>"; };
 		EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvadersView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -114,8 +114,8 @@
 		EA91F5B52A40F55D00ECEB5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EA91F5B42A40F55D00ECEB5A /* Invader.app */,
-				EA2D3AAC2A72C5E300DC5F40 /* Invader-iOS.app */,
+				EA91F5B42A40F55D00ECEB5A /* SpaceInvaders.app */,
+				EA2D3AAC2A72C5E300DC5F40 /* SpaceInvaders-iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -135,9 +135,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EA2D3AAB2A72C5E300DC5F40 /* Invader-iOS */ = {
+		EA2D3AAB2A72C5E300DC5F40 /* SpaceInvaders-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EA2D3AB92A72C5E400DC5F40 /* Build configuration list for PBXNativeTarget "Invader-iOS" */;
+			buildConfigurationList = EA2D3AB92A72C5E400DC5F40 /* Build configuration list for PBXNativeTarget "SpaceInvaders-iOS" */;
 			buildPhases = (
 				EA2D3AA82A72C5E300DC5F40 /* Sources */,
 				EA2D3AA92A72C5E300DC5F40 /* Frameworks */,
@@ -147,14 +147,14 @@
 			);
 			dependencies = (
 			);
-			name = "Invader-iOS";
+			name = "SpaceInvaders-iOS";
 			productName = "Invader-iOS";
-			productReference = EA2D3AAC2A72C5E300DC5F40 /* Invader-iOS.app */;
+			productReference = EA2D3AAC2A72C5E300DC5F40 /* SpaceInvaders-iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		EA91F5B32A40F55D00ECEB5A /* Invader */ = {
+		EA91F5B32A40F55D00ECEB5A /* SpaceInvaders */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EA91F5C32A40F55E00ECEB5A /* Build configuration list for PBXNativeTarget "Invader" */;
+			buildConfigurationList = EA91F5C32A40F55E00ECEB5A /* Build configuration list for PBXNativeTarget "SpaceInvaders" */;
 			buildPhases = (
 				EA91F5B02A40F55D00ECEB5A /* Sources */,
 				EA91F5B12A40F55D00ECEB5A /* Frameworks */,
@@ -164,9 +164,9 @@
 			);
 			dependencies = (
 			);
-			name = Invader;
+			name = SpaceInvaders;
 			productName = Invader;
-			productReference = EA91F5B42A40F55D00ECEB5A /* Invader.app */;
+			productReference = EA91F5B42A40F55D00ECEB5A /* SpaceInvaders.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -189,7 +189,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EA91F5AF2A40F55D00ECEB5A /* Build configuration list for PBXProject "Invader" */;
+			buildConfigurationList = EA91F5AF2A40F55D00ECEB5A /* Build configuration list for PBXProject "SpaceInvaders" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -202,8 +202,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EA91F5B32A40F55D00ECEB5A /* Invader */,
-				EA2D3AAB2A72C5E300DC5F40 /* Invader-iOS */,
+				EA91F5B32A40F55D00ECEB5A /* SpaceInvaders */,
+				EA2D3AAB2A72C5E300DC5F40 /* SpaceInvaders-iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -531,7 +531,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EA2D3AB92A72C5E400DC5F40 /* Build configuration list for PBXNativeTarget "Invader-iOS" */ = {
+		EA2D3AB92A72C5E400DC5F40 /* Build configuration list for PBXNativeTarget "SpaceInvaders-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA2D3AB72A72C5E400DC5F40 /* Debug */,
@@ -540,7 +540,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EA91F5AF2A40F55D00ECEB5A /* Build configuration list for PBXProject "Invader" */ = {
+		EA91F5AF2A40F55D00ECEB5A /* Build configuration list for PBXProject "SpaceInvaders" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA91F5C12A40F55E00ECEB5A /* Debug */,
@@ -549,7 +549,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EA91F5C32A40F55E00ECEB5A /* Build configuration list for PBXNativeTarget "Invader" */ = {
+		EA91F5C32A40F55E00ECEB5A /* Build configuration list for PBXNativeTarget "SpaceInvaders" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA91F5C42A40F55E00ECEB5A /* Debug */,

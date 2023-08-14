@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA91F5B32A40F55D00ECEB5A"
-               BuildableName = "Invader.app"
-               BlueprintName = "Invader"
-               ReferencedContainer = "container:Invader.xcodeproj">
+               BlueprintIdentifier = "EA2D3AAB2A72C5E300DC5F40"
+               BuildableName = "SpaceInvaders-iOS.app"
+               BlueprintName = "SpaceInvaders-iOS"
+               ReferencedContainer = "container:SpaceInvaders.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -43,19 +43,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EA91F5B32A40F55D00ECEB5A"
-            BuildableName = "Invader.app"
-            BlueprintName = "Invader"
-            ReferencedContainer = "container:Invader.xcodeproj">
+            BlueprintIdentifier = "EA2D3AAB2A72C5E300DC5F40"
+            BuildableName = "SpaceInvaders-iOS.app"
+            BlueprintName = "SpaceInvaders-iOS"
+            ReferencedContainer = "container:SpaceInvaders.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "RUST_BACKTRACE"
-            value = "full"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -67,10 +60,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EA91F5B32A40F55D00ECEB5A"
-            BuildableName = "Invader.app"
-            BlueprintName = "Invader"
-            ReferencedContainer = "container:Invader.xcodeproj">
+            BlueprintIdentifier = "EA2D3AAB2A72C5E300DC5F40"
+            BuildableName = "SpaceInvaders-iOS.app"
+            BlueprintName = "SpaceInvaders-iOS"
+            ReferencedContainer = "container:SpaceInvaders.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
