@@ -69,16 +69,6 @@ final private class IoObject: IoModelProtocol {
     }
 }
 
-private func input_callback(io_object: UnsafeRawPointer!, port: UInt8) -> UInt8 {
-    let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
-    return ioObject.input(port: port)
-}
-
-private func output_callback(io_object: UnsafeRawPointer!, port: UInt8, value: UInt8) {
-    let ioObject = io_object.bindMemory(to: IoObject.self, capacity: 1).pointee
-    ioObject.output(port: port, value: value)
-}
-
 protocol KeyInputControlDelegate: AnyObject {
     func press(_ action: Action)
     func release(_ action: Action)
@@ -114,7 +104,13 @@ final class CpuController: KeyInputControlDelegate {
     private var ioObject = IoObject()
     
     init() {
-        let callbacks = IoCallbacks(input: input_callback, output: output_callback)
+        let callbacks = IoCallbacks(input: {io_object, port in
+            let ioObject = io_object?.bindMemory(to: IoObject.self, capacity: 1).pointee
+            return ioObject!.input(port: port)
+        }, output: {io_object, port, value in
+            let ioObject = io_object?.bindMemory(to: IoObject.self, capacity: 1).pointee
+            ioObject?.output(port: port, value: value)
+        })
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
         let resources = new_cpu_instance(path, 8192, callbacks, &ioObject)
         self.cpu = resources.cpu
