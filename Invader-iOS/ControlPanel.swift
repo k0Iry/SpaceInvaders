@@ -10,65 +10,44 @@ import SwiftUI
 struct ControlPanel: View {
     private let keyInputDelegate: KeyInputControlDelegate?
     
-    @State private var startButtonTitle = "Start"
+    @State private var startButtonTitle = "▶"
     
     init(keyInputDelegate: KeyInputControlDelegate?) {
         self.keyInputDelegate = keyInputDelegate
     }
     
     var body: some View {
-        VStack {
-            HStack {
-                Button(startButtonTitle, action: {
-                    keyInputDelegate?.press(.pause)
-                    if startButtonTitle != "Pause" {
-                        startButtonTitle = "Pause"
-                    } else {
-                        startButtonTitle = "Resume"
+        HStack {
+            VStack {
+                HStack {
+                    Button(startButtonTitle) {
+                        keyInputDelegate?.press(.pause)
+                        startButtonTitle = startButtonTitle == "▶" ? "▶॥" : "▶"
                     }
-                })
-                Button("Drop Coins", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
-                    if pressing {
-                        keyInputDelegate?.press(.coin)
-                    } else {
-                        keyInputDelegate?.release(.coin)
+                    Button("↻") {
+                        keyInputDelegate?.press(.restart)
                     }
-                })
-                Button("New Game", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
-                    if pressing {
-                        keyInputDelegate?.press(.start)
-                    } else {
-                        keyInputDelegate?.release(.start)
+                }.padding()
+            }
+            VStack {
+                HStack {
+                    Button("💰", action: {}).onLongPressGesture(perform: {}) { pressing in
+                        if pressing {
+                            keyInputDelegate?.press(.coin)
+                        } else {
+                            keyInputDelegate?.release(.coin)
+                        }
                     }
-                })
-            }.padding().buttonStyle(.borderedProminent)
-            HStack {
-                Button("<", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
-                    if pressing {
-                        keyInputDelegate?.press(.left)
-                    } else {
-                        keyInputDelegate?.release(.left)
+                    Button("👾", action: {}).onLongPressGesture(perform: {}) { pressing in
+                        if pressing {
+                            keyInputDelegate?.press(.start)
+                        } else {
+                            keyInputDelegate?.release(.start)
+                        }
                     }
-                })
-                Button("fire🔥", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
-                    if pressing {
-                        keyInputDelegate?.press(.fire)
-                    } else {
-                        keyInputDelegate?.release(.fire)
-                    }
-                })
-                Button(">", action: {}).onLongPressGesture(perform: {}, onPressingChanged: { pressing in
-                    if pressing {
-                        keyInputDelegate?.press(.right)
-                    } else {
-                        keyInputDelegate?.release(.right)
-                    }
-                })
-            }.padding().buttonStyle(.borderedProminent)
-            Button("Restart", action: {
-                keyInputDelegate?.press(.restart)
-            }).buttonStyle(.borderedProminent)
-        }
+                }.padding()
+            }
+        }.padding().buttonStyle(.bordered).buttonBorderShape(.circle)
     }
 }
 

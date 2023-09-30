@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CDF998942AC8B24B00516A78 /* PlayControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF998932AC8B24B00516A78 /* PlayControl.swift */; };
 		EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */; };
 		EA2D3AB32A72C5E400DC5F40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */; };
 		EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CDF998932AC8B24B00516A78 /* PlayControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayControl.swift; sourceTree = "<group>"; };
 		EA2D3AAC2A72C5E300DC5F40 /* SpaceInvaders-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SpaceInvaders-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invader_iOSApp.swift; sourceTree = "<group>"; };
 		EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				EA91A9312A877E6A00BB119C /* ControlPanel.swift */,
+				CDF998932AC8B24B00516A78 /* PlayControl.swift */,
 				EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */,
 				EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */,
 			);
@@ -177,7 +180,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					EA2D3AAB2A72C5E300DC5F40 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -239,6 +242,7 @@
 				EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */,
 				EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */,
 				EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */,
+				CDF998942AC8B24B00516A78 /* PlayControl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,7 +271,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
+				DEVELOPMENT_TEAM = AYH9Q256AH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -276,15 +280,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/xintu/Desktop/emulator/target/aarch64-apple-ios-sim/release/",
-					"/Users/xintu/Desktop/emulator/target/aarch64-apple-ios/release/",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/target/aarch64-apple-ios/release";
 				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kljsandjb.Invader-iOS";
@@ -312,7 +313,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
+				DEVELOPMENT_TEAM = AYH9Q256AH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -321,15 +322,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"/Users/xintu/Desktop/emulator/target/aarch64-apple-ios-sim/release/",
-					"/Users/xintu/Desktop/emulator/target/aarch64-apple-ios/release/",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/target/aarch64-apple-ios/release";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kljsandjb.Invader-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -379,9 +377,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -399,7 +399,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -439,9 +439,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -469,6 +471,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -504,6 +507,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;

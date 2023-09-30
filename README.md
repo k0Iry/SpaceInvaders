@@ -31,5 +31,6 @@ R => Restart the whole game (this will erase all the game progress)
 There are buttons to follow the controls.
 
 ![screenshot-ios](./screenshots/screenshot-ios.png)
+![screenshot-ios](./screenshots/screenshot-ios-dark.png)
 
 Thanks to [emulator101](http://www.emulator101.com).

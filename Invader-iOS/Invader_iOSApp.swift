@@ -12,8 +12,9 @@ struct Invader_iOSApp: App {
     @StateObject private var bitmapProducer = CpuController().bitmapProducer
     var body: some Scene {
         WindowGroup {
-            InvadersView(bitmapImage: $bitmapProducer.bitmapImage)
             ControlPanel(keyInputDelegate: bitmapProducer.keyInputDelegate)
+            InvadersView(bitmapImage: $bitmapProducer.bitmapImage)
+            PlayControl(keyInputDelegate: bitmapProducer.keyInputDelegate)
         }
     }
 }
