@@ -112,7 +112,9 @@ final class CpuController: KeyInputControlDelegate {
             ioObject?.output(port: port, value: value)
         })
         let path = Bundle.main.path(forResource: "invaders", ofType: nil)
-        let resources = new_cpu_instance(path, 8192, callbacks, &ioObject)
+        let resources = withUnsafeBytes(of: &ioObject) {
+            return new_cpu_instance(path, 8192, callbacks, $0.baseAddress!)
+        }
         self.cpu = resources.cpu
         self.sender = resources.sender
         self.ram = get_ram(cpu)
