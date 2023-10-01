@@ -16,7 +16,9 @@ struct PlayControl: View {
     
     var body: some View {
         HStack {
-            Button(action: {}) {
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }) {
                 HStack {
                     Spacer()
                     Text("<")
@@ -29,7 +31,9 @@ struct PlayControl: View {
                     keyInputDelegate?.release(.left)
                 }
             }
-            Button(action: {}) {
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            }) {
                 HStack {
                     Spacer()
                     Text("🔥")
@@ -42,7 +46,9 @@ struct PlayControl: View {
                     keyInputDelegate?.release(.fire)
                 }
             }
-            Button(action: {}) {
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }) {
                 HStack {
                     Spacer()
                     Text(">")
