@@ -13,8 +13,6 @@
 		EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
 		EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
 		EA2D3AC02A72C86F00DC5F40 /* invaders in Resources */ = {isa = PBXBuildFile; fileRef = EA50656B2A4B8B1E005B939E /* invaders */; };
-		EA2D3AC72A72CD6A00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC62A72CD5900DC5F40 /* libi8080emulator.a */; };
-		EA2D3AC92A72CF5F00DC5F40 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA2D3AC82A72CF5000DC5F40 /* libi8080emulator.a */; };
 		EA3E67D32A88D9B90041C771 /* IOModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */; };
 		EA3E67D42A88D9B90041C771 /* IOModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */; };
 		EA50656A2A4B6CC6005B939E /* CpuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5065692A4B6CC6005B939E /* CpuController.swift */; };
@@ -24,6 +22,8 @@
 		EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B72A40F55D00ECEB5A /* InvaderApp.swift */; };
 		EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
+		EAD354202B12699700F877A6 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD3541F2B12698900F877A6 /* libi8080emulator.a */; };
+		EAD354222B1269D000F877A6 /* libi8080emulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD354212B1269B800F877A6 /* libi8080emulator.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,8 +32,6 @@
 		EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invader_iOSApp.swift; sourceTree = "<group>"; };
 		EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA2D3AC12A72C91A00DC5F40 /* Invader-iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
-		EA2D3AC62A72CD5900DC5F40 /* libi8080emulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator.a; path = "../emulator/target/aarch64-apple-ios-sim/release/libi8080emulator.a"; sourceTree = "<group>"; };
-		EA2D3AC82A72CF5000DC5F40 /* libi8080emulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator.a; path = ../emulator/target/release/libi8080emulator.a; sourceTree = "<group>"; };
 		EA3C66122A4B59C8002B87C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EA3C66202A4B5C33002B87C6 /* Invader-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Invader-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		EA3C66212A4B5C33002B87C6 /* emulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = emulator.h; sourceTree = "<group>"; };
@@ -47,6 +45,8 @@
 		EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvadersView.swift; sourceTree = "<group>"; };
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
+		EAD3541F2B12698900F877A6 /* libi8080emulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator.a; path = "target/universal-apple-darwin/release/libi8080emulator.a"; sourceTree = "<group>"; };
+		EAD354212B1269B800F877A6 /* libi8080emulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator.a; path = "target/aarch64-apple-ios/release/libi8080emulator.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA2D3AC72A72CD6A00DC5F40 /* libi8080emulator.a in Frameworks */,
+				EAD354222B1269D000F877A6 /* libi8080emulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA2D3AC92A72CF5F00DC5F40 /* libi8080emulator.a in Frameworks */,
+				EAD354202B12699700F877A6 /* libi8080emulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,8 +93,8 @@
 		EA3C66132A4B59D9002B87C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EA2D3AC82A72CF5000DC5F40 /* libi8080emulator.a */,
-				EA2D3AC62A72CD5900DC5F40 /* libi8080emulator.a */,
+				EAD354212B1269B800F877A6 /* libi8080emulator.a */,
+				EAD3541F2B12698900F877A6 /* libi8080emulator.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -271,7 +271,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = AYH9Q256AH;
+				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -313,7 +313,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = AYH9Q256AH;
+				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -484,7 +484,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = /Users/xintu/Desktop/emulator/target/release;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/target/universal-apple-darwin/release";
 				MARKETING_VERSION = 1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
@@ -520,7 +520,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = /Users/xintu/Desktop/emulator/target/release;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/target/universal-apple-darwin/release";
 				MARKETING_VERSION = 1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
