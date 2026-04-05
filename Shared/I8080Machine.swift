@@ -118,7 +118,7 @@ final class I8080Machine {
         }
 
         let interruptStatus = lock.withLock {
-            let status = i8080_interrupt(cpu, vblankInterrupt, false)
+            let status = i8080_interrupt(cpu, vblankInterrupt)
             if status == I8080Status_Ok {
                 vblankInterrupt = vblankInterrupt == 1 ? 2 : 1
             }
