@@ -9,12 +9,20 @@ import SwiftUI
 
 @main
 struct Invader_iOSApp: App {
-    @StateObject private var bitmapProducer = CpuController().bitmapProducer
+    private let cpuController: CpuController
+    @StateObject private var bitmapProducer: BitmapProducer
+
+    init() {
+        let cpuController = CpuController()
+        self.cpuController = cpuController
+        _bitmapProducer = StateObject(wrappedValue: cpuController.bitmapProducer)
+    }
+
     var body: some Scene {
         WindowGroup {
-            ControlPanel(keyInputDelegate: bitmapProducer.keyInputDelegate)
+            ControlPanel(keyInputDelegate: cpuController)
             InvadersView(bitmapImage: $bitmapProducer.bitmapImage)
-            PlayControl(keyInputDelegate: bitmapProducer.keyInputDelegate)
+            PlayControl(keyInputDelegate: cpuController)
         }
     }
 }
