@@ -194,16 +194,46 @@ final class CpuController: KeyInputControlDelegate {
 }
 
 final internal class BitmapProducer: ObservableObject {
+    private static let bytesPerColumn = height / 8
+    private static let packedFrameBufferSize = width * bytesPerColumn
+    private static let targetPresentationIntervalNs: UInt64 = 1_000_000_000 / 60
+    private static let expandedPixelLookup: [[UInt8]] = (0..<256).map { byte in
+        (0..<8).map { bit in
+            (byte & (1 << bit)) != 0 ? 0xff : 0
+        }
+    }
+    private static let packedIndexBaseOffsets: [Int] = {
+        var offsets = Array(repeating: 0, count: packedFrameBufferSize)
+        for column in 0..<width {
+            for byteRow in 0..<bytesPerColumn {
+                let packedIndex = column * bytesPerColumn + byteRow
+                offsets[packedIndex] = (height - 1 - byteRow * 8) * width + column
+            }
+        }
+        return offsets
+    }()
+
 #if os(iOS) || os(tvOS) || os(watchOS)
     private var displayLink: CADisplayLink?
 #else
     private var displayLink: CVDisplayLink?
 #endif
+
     private let drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * height)
+    private let cachedFrameBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: packedFrameBufferSize)
     private let frameBuffer: UnsafePointer<UInt8>
     private let colorSpace = CGColorSpaceCreateDeviceGray()
     private let bitmapContext: CGContext?
     private let refreshMode: DisplayRefreshMode
+    private let renderQueue = DispatchQueue(label: "SpaceInvaders.BitmapProducer", qos: .userInteractive)
+    private let renderStateLock = NSLock()
+    private let publishStateLock = NSLock()
+
+    private var hasCachedFrame = false
+    private var renderInFlight = false
+    private var framePendingPresentation = false
+    private var publishScheduled = false
+    private var nextPublishDeadlineNs: UInt64 = 0
 
     internal weak var keyInputDelegate: KeyInputControlDelegate?
 
@@ -213,7 +243,7 @@ final internal class BitmapProducer: ObservableObject {
     private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
         CVDisplayLinkSetOutputHandler(displayLink!) { (_, _, _, _, _) in
-            self.drawBitmapImage()
+            self.scheduleDrawBitmapImage()
             return kCVReturnSuccess
         }
     }
@@ -223,7 +253,7 @@ final internal class BitmapProducer: ObservableObject {
         if enable {
 #if os(iOS) || os(tvOS) || os(watchOS)
             guard displayLink == nil else { return }
-            let displayLink = CADisplayLink(target: self, selector: #selector(drawBitmapImage))
+            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkFired))
             if #available(iOS 15.0, tvOS 15.0, watchOS 8.0, *) {
                 displayLink.preferredFrameRateRange = refreshMode.preferredFrameRateRange()
             } else {
@@ -241,6 +271,14 @@ final internal class BitmapProducer: ObservableObject {
 #else
             CVDisplayLinkStop(displayLink!)
 #endif
+            renderStateLock.withLock {
+                renderInFlight = false
+            }
+            publishStateLock.withLock {
+                framePendingPresentation = false
+                publishScheduled = false
+                nextPublishDeadlineNs = 0
+            }
         }
     }
 
@@ -256,6 +294,7 @@ final internal class BitmapProducer: ObservableObject {
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.none.rawValue
         )
+        self.cachedFrameBuffer.initialize(repeating: 0, count: Self.packedFrameBufferSize)
 #if os(macOS)
         setupDisplayLink()
 #endif
@@ -263,31 +302,121 @@ final internal class BitmapProducer: ObservableObject {
 
     deinit {
         drawingBuffer.deallocate()
+        cachedFrameBuffer.deinitialize(count: Self.packedFrameBufferSize)
+        cachedFrameBuffer.deallocate()
     }
 
-    @objc private func drawBitmapImage() {
-        for i in 0..<width {
-            for j in stride(from: 0, to: height, by: 8) {
-                let pixel = frameBuffer[i * height / 8 + j / 8]
-                let offset = (height - 1 - j) * width + i
-                var ptr = drawingBuffer.advanced(by: offset)
-                for p in 0..<8 {
-                    let monochrome: UInt8 = (pixel & (1 << p)) != 0 ? 0xff : 0
-                    ptr.pointee = monochrome
-                    ptr -= width
-                }
+#if os(iOS) || os(tvOS) || os(watchOS)
+    @objc private func displayLinkFired() {
+        scheduleDrawBitmapImage()
+    }
+#endif
+
+    private func scheduleDrawBitmapImage() {
+        let shouldSchedule = renderStateLock.withLock { () -> Bool in
+            guard !renderInFlight else { return false }
+            renderInFlight = true
+            return true
+        }
+
+        guard shouldSchedule else { return }
+
+        renderQueue.async { [weak self] in
+            self?.renderFrame()
+        }
+    }
+
+    private func renderFrame() {
+        defer {
+            renderStateLock.withLock {
+                renderInFlight = false
             }
         }
-        let bitmapImage = bitmapContext?.makeImage()
-#if os(macOS)
-        DispatchQueue.main.async {
-            self.bitmapImage = bitmapImage
+
+        var didChange = !hasCachedFrame
+
+        for packedIndex in 0..<Self.packedFrameBufferSize {
+            let pixel = frameBuffer[packedIndex]
+            if hasCachedFrame, pixel == cachedFrameBuffer[packedIndex] {
+                continue
+            }
+
+            cachedFrameBuffer[packedIndex] = pixel
+            didChange = true
+
+            let expandedPixels = Self.expandedPixelLookup[Int(pixel)]
+            var ptr = drawingBuffer.advanced(by: Self.packedIndexBaseOffsets[packedIndex])
+            for monochrome in expandedPixels {
+                ptr.pointee = monochrome
+                ptr -= width
+            }
         }
-#else
-        self.bitmapImage = bitmapImage
-#endif
+
+        guard didChange else { return }
+        hasCachedFrame = true
+
+        markFramePendingForPresentation()
+    }
+
+    private func markFramePendingForPresentation() {
+        let delayNanoseconds = publishStateLock.withLock { () -> UInt64? in
+            framePendingPresentation = true
+
+            guard !publishScheduled else { return nil }
+
+            publishScheduled = true
+
+            let now = DispatchTime.now().uptimeNanoseconds
+            let deadline = max(now, nextPublishDeadlineNs)
+            return deadline - now
+        }
+
+        guard let delayNanoseconds else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delayNanoseconds))) { [weak self] in
+            self?.publishLatestRenderedFrame()
+        }
+    }
+
+    private func publishLatestRenderedFrame() {
+        renderQueue.async { [weak self] in
+            self?.makeAndPublishLatestImage()
+        }
+    }
+
+    private func makeAndPublishLatestImage() {
+        let shouldPublish = publishStateLock.withLock { () -> Bool in
+            publishScheduled = false
+            guard framePendingPresentation else { return false }
+            framePendingPresentation = false
+            nextPublishDeadlineNs = DispatchTime.now().uptimeNanoseconds + Self.targetPresentationIntervalNs
+            return true
+        }
+
+        guard shouldPublish, let bitmapImage = bitmapContext?.makeImage() else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.bitmapImage = bitmapImage
+        }
+
+        let delayNanoseconds = publishStateLock.withLock { () -> UInt64? in
+            guard framePendingPresentation, !publishScheduled else { return nil }
+
+            publishScheduled = true
+
+            let now = DispatchTime.now().uptimeNanoseconds
+            let deadline = max(now, nextPublishDeadlineNs)
+            return deadline - now
+        }
+
+        guard let delayNanoseconds else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delayNanoseconds))) { [weak self] in
+            self?.publishLatestRenderedFrame()
+        }
     }
 }
+
 
 private extension NSLock {
     func withLock<T>(_ body: () -> T) -> T {
