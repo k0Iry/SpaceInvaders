@@ -6,7 +6,9 @@ struct Invader_iOSApp: App {
     @StateObject private var bitmapProducer: BitmapProducer
 
     init() {
-        let cpuController = CpuController()
+        let displayRefreshMode: DisplayRefreshMode = .original60
+
+        let cpuController = CpuController(refreshMode: displayRefreshMode)
         self.cpuController = cpuController
         _bitmapProducer = StateObject(wrappedValue: cpuController.bitmapProducer)
     }

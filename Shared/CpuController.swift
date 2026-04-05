@@ -81,6 +81,32 @@ enum Action: UInt16 {
     case restart = 15
 }
 
+enum DisplayRefreshMode {
+    case original60
+    case deviceMaximum
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+    func preferredFrameRateRange() -> CAFrameRateRange {
+        switch self {
+        case .original60:
+            return CAFrameRateRange(minimum: 30, maximum: 60, preferred: 60)
+        case .deviceMaximum:
+            let maximum = Float(max(60, UIScreen.main.maximumFramesPerSecond))
+            return CAFrameRateRange(minimum: 60, maximum: maximum, preferred: maximum)
+        }
+    }
+
+    func fallbackFramesPerSecond() -> Int {
+        switch self {
+        case .original60:
+            return 60
+        case .deviceMaximum:
+            return max(60, UIScreen.main.maximumFramesPerSecond)
+        }
+    }
+#endif
+}
+
 final class CpuController: KeyInputControlDelegate {
     private let machine: I8080Machine
     private let stateLock = NSLock()
@@ -90,7 +116,7 @@ final class CpuController: KeyInputControlDelegate {
 
     var bitmapProducer: BitmapProducer
 
-    init() {
+    init(refreshMode: DisplayRefreshMode = .original60) {
         guard let romURL = Bundle.main.url(forResource: "invaders", withExtension: nil),
               let romData = try? Data(contentsOf: romURL)
         else {
@@ -98,7 +124,7 @@ final class CpuController: KeyInputControlDelegate {
         }
 
         self.machine = I8080Machine(romData: romData)
-        self.bitmapProducer = BitmapProducer(frameBuffer: machine.frameBuffer)
+        self.bitmapProducer = BitmapProducer(frameBuffer: machine.frameBuffer, refreshMode: refreshMode)
         self.bitmapProducer.keyInputDelegate = self
 
         Thread { [weak self] in
@@ -175,6 +201,9 @@ final internal class BitmapProducer: ObservableObject {
 #endif
     private let drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * height)
     private let frameBuffer: UnsafePointer<UInt8>
+    private let colorSpace = CGColorSpaceCreateDeviceGray()
+    private let bitmapContext: CGContext?
+    private let refreshMode: DisplayRefreshMode
 
     internal weak var keyInputDelegate: KeyInputControlDelegate?
 
@@ -193,14 +222,21 @@ final internal class BitmapProducer: ObservableObject {
     internal func enableDisplayLink(_ enable: Bool) {
         if enable {
 #if os(iOS) || os(tvOS) || os(watchOS)
-            displayLink = CADisplayLink(target: self, selector: #selector(drawBitmapImage))
-            displayLink?.add(to: RunLoop.main, forMode: .default)
+            guard displayLink == nil else { return }
+            let displayLink = CADisplayLink(target: self, selector: #selector(drawBitmapImage))
+            if #available(iOS 15.0, tvOS 15.0, watchOS 8.0, *) {
+                displayLink.preferredFrameRateRange = refreshMode.preferredFrameRateRange()
+            } else {
+                displayLink.preferredFramesPerSecond = refreshMode.fallbackFramesPerSecond()
+            }
+            displayLink.add(to: RunLoop.main, forMode: .common)
+            self.displayLink = displayLink
 #else
             CVDisplayLinkStart(displayLink!)
 #endif
         } else {
 #if os(iOS) || os(tvOS) || os(watchOS)
-            displayLink?.remove(from: RunLoop.main, forMode: .default)
+            displayLink?.invalidate()
             displayLink = nil
 #else
             CVDisplayLinkStop(displayLink!)
@@ -208,8 +244,18 @@ final internal class BitmapProducer: ObservableObject {
         }
     }
 
-    init(frameBuffer: UnsafePointer<UInt8>) {
+    init(frameBuffer: UnsafePointer<UInt8>, refreshMode: DisplayRefreshMode) {
+        self.refreshMode = refreshMode
         self.frameBuffer = frameBuffer
+        self.bitmapContext = CGContext(
+            data: drawingBuffer,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.none.rawValue
+        )
 #if os(macOS)
         setupDisplayLink()
 #endif
@@ -232,15 +278,6 @@ final internal class BitmapProducer: ObservableObject {
                 }
             }
         }
-        let bitmapContext = CGContext(
-            data: drawingBuffer,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: width,
-            space: CGColorSpaceCreateDeviceGray(),
-            bitmapInfo: CGImageAlphaInfo.none.rawValue
-        )
         let bitmapImage = bitmapContext?.makeImage()
 #if os(macOS)
         DispatchQueue.main.async {
