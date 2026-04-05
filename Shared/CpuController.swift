@@ -9,7 +9,6 @@ import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #else
-import CoreGraphics
 import CoreVideo
 #endif
 
@@ -193,25 +192,10 @@ final class CpuController: KeyInputControlDelegate {
     }
 }
 
-final internal class BitmapProducer: ObservableObject {
+final internal class BitmapProducer {
     private static let bytesPerColumn = height / 8
     private static let packedFrameBufferSize = width * bytesPerColumn
     private static let targetPresentationIntervalNs: UInt64 = 1_000_000_000 / 60
-    private static let expandedPixelLookup: [[UInt8]] = (0..<256).map { byte in
-        (0..<8).map { bit in
-            (byte & (1 << bit)) != 0 ? 0xff : 0
-        }
-    }
-    private static let packedIndexBaseOffsets: [Int] = {
-        var offsets = Array(repeating: 0, count: packedFrameBufferSize)
-        for column in 0..<width {
-            for byteRow in 0..<bytesPerColumn {
-                let packedIndex = column * bytesPerColumn + byteRow
-                offsets[packedIndex] = (height - 1 - byteRow * 8) * width + column
-            }
-        }
-        return offsets
-    }()
 
 #if os(iOS) || os(tvOS) || os(watchOS)
     private var displayLink: CADisplayLink?
@@ -219,31 +203,28 @@ final internal class BitmapProducer: ObservableObject {
     private var displayLink: CVDisplayLink?
 #endif
 
-    private let drawingBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * height)
-    private let cachedFrameBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: packedFrameBufferSize)
+    private let latestFrameBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * (height / 8))
     private let frameBuffer: UnsafePointer<UInt8>
-    private let colorSpace = CGColorSpaceCreateDeviceGray()
-    private let bitmapContext: CGContext?
     private let refreshMode: DisplayRefreshMode
     private let renderQueue = DispatchQueue(label: "SpaceInvaders.BitmapProducer", qos: .userInteractive)
     private let renderStateLock = NSLock()
     private let publishStateLock = NSLock()
+    private let frameBufferLock = NSLock()
 
     private var hasCachedFrame = false
     private var renderInFlight = false
     private var framePendingPresentation = false
     private var publishScheduled = false
     private var nextPublishDeadlineNs: UInt64 = 0
+    private var presentedFrameRevision: UInt64 = 0
 
     internal weak var keyInputDelegate: KeyInputControlDelegate?
-
-    @Published var bitmapImage: CGImage?
 
 #if os(macOS)
     private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
         CVDisplayLinkSetOutputHandler(displayLink!) { (_, _, _, _, _) in
-            self.scheduleDrawBitmapImage()
+            self.scheduleFrameRender()
             return kCVReturnSuccess
         }
     }
@@ -285,34 +266,34 @@ final internal class BitmapProducer: ObservableObject {
     init(frameBuffer: UnsafePointer<UInt8>, refreshMode: DisplayRefreshMode) {
         self.refreshMode = refreshMode
         self.frameBuffer = frameBuffer
-        self.bitmapContext = CGContext(
-            data: drawingBuffer,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: width,
-            space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.none.rawValue
-        )
-        self.cachedFrameBuffer.initialize(repeating: 0, count: Self.packedFrameBufferSize)
+        self.latestFrameBuffer.initialize(repeating: 0, count: Self.packedFrameBufferSize)
 #if os(macOS)
         setupDisplayLink()
 #endif
     }
 
     deinit {
-        drawingBuffer.deallocate()
-        cachedFrameBuffer.deinitialize(count: Self.packedFrameBufferSize)
-        cachedFrameBuffer.deallocate()
+        latestFrameBuffer.deinitialize(count: Self.packedFrameBufferSize)
+        latestFrameBuffer.deallocate()
+    }
+
+    internal func withLatestFrameIfNeeded<T>(
+        after revision: UInt64,
+        _ body: (UnsafePointer<UInt8>, UInt64) -> T
+    ) -> T? {
+        frameBufferLock.withLock {
+            guard presentedFrameRevision != revision else { return nil }
+            return body(UnsafePointer(latestFrameBuffer), presentedFrameRevision)
+        }
     }
 
 #if os(iOS) || os(tvOS) || os(watchOS)
     @objc private func displayLinkFired() {
-        scheduleDrawBitmapImage()
+        scheduleFrameRender()
     }
 #endif
 
-    private func scheduleDrawBitmapImage() {
+    private func scheduleFrameRender() {
         let shouldSchedule = renderStateLock.withLock { () -> Bool in
             guard !renderInFlight else { return false }
             renderInFlight = true
@@ -333,27 +314,27 @@ final internal class BitmapProducer: ObservableObject {
             }
         }
 
-        var didChange = !hasCachedFrame
+        let didChange = frameBufferLock.withLock { () -> Bool in
+            var didChange = !hasCachedFrame
 
-        for packedIndex in 0..<Self.packedFrameBufferSize {
-            let pixel = frameBuffer[packedIndex]
-            if hasCachedFrame, pixel == cachedFrameBuffer[packedIndex] {
-                continue
+            for packedIndex in 0..<Self.packedFrameBufferSize {
+                let pixel = frameBuffer[packedIndex]
+                if hasCachedFrame, pixel == latestFrameBuffer[packedIndex] {
+                    continue
+                }
+
+                latestFrameBuffer[packedIndex] = pixel
+                didChange = true
             }
 
-            cachedFrameBuffer[packedIndex] = pixel
-            didChange = true
-
-            let expandedPixels = Self.expandedPixelLookup[Int(pixel)]
-            var ptr = drawingBuffer.advanced(by: Self.packedIndexBaseOffsets[packedIndex])
-            for monochrome in expandedPixels {
-                ptr.pointee = monochrome
-                ptr -= width
+            if didChange {
+                hasCachedFrame = true
             }
+
+            return didChange
         }
 
         guard didChange else { return }
-        hasCachedFrame = true
 
         markFramePendingForPresentation()
     }
@@ -380,11 +361,11 @@ final internal class BitmapProducer: ObservableObject {
 
     private func publishLatestRenderedFrame() {
         renderQueue.async { [weak self] in
-            self?.makeAndPublishLatestImage()
+            self?.publishLatestFrameIfNeeded()
         }
     }
 
-    private func makeAndPublishLatestImage() {
+    private func publishLatestFrameIfNeeded() {
         let shouldPublish = publishStateLock.withLock { () -> Bool in
             publishScheduled = false
             guard framePendingPresentation else { return false }
@@ -393,10 +374,10 @@ final internal class BitmapProducer: ObservableObject {
             return true
         }
 
-        guard shouldPublish, let bitmapImage = bitmapContext?.makeImage() else { return }
+        guard shouldPublish else { return }
 
-        DispatchQueue.main.async { [weak self] in
-            self?.bitmapImage = bitmapImage
+        frameBufferLock.withLock {
+            presentedFrameRevision &+= 1
         }
 
         let delayNanoseconds = publishStateLock.withLock { () -> UInt64? in
@@ -416,7 +397,6 @@ final internal class BitmapProducer: ObservableObject {
         }
     }
 }
-
 
 private extension NSLock {
     func withLock<T>(_ body: () -> T) -> T {

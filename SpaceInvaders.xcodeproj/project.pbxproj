@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F0A1B2C3D4E5F60010000002 /* I8080Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */; };
-		F0A1B2C3D4E5F60010000003 /* I8080Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */; };
 		CDF998942AC8B24B00516A78 /* PlayControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF998932AC8B24B00516A78 /* PlayControl.swift */; };
 		EA2D3AAF2A72C5E300DC5F40 /* Invader_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */; };
 		EA2D3AB32A72C5E400DC5F40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA2D3AB22A72C5E400DC5F40 /* Assets.xcassets */; };
@@ -25,11 +23,14 @@
 		EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */; };
 		EA91F5BC2A40F55E00ECEB5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */; };
 		EAD354202B12699700F877A6 /* libi8080emulator_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD3541F2B12698900F877A6 /* libi8080emulator_ffi.a */; };
-		EAD354222B1269D000F877A6 /* libi8080emulator_ffi_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD354212B1269B800F877A6 /* libi8080emulator_ffi_ios.a */; };
+		EAD354222B1269D000F877A6 /* libi8080emulator_ffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAD354212B1269B800F877A6 /* libi8080emulator_ffi.a */; };
+		F0A1B2C3D4E5F60010000002 /* I8080Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */; };
+		F0A1B2C3D4E5F60010000003 /* I8080Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */; };
+F1A2B3C4D5E6F70020000002 /* InvadersShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70020000001 /* InvadersShaders.metal */; };
+F1A2B3C4D5E6F70020000003 /* InvadersShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70020000001 /* InvadersShaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I8080Machine.swift; sourceTree = "<group>"; };
 		CDF998932AC8B24B00516A78 /* PlayControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayControl.swift; sourceTree = "<group>"; };
 		EA2D3AAC2A72C5E300DC5F40 /* SpaceInvaders-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SpaceInvaders-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA2D3AAE2A72C5E300DC5F40 /* Invader_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invader_iOSApp.swift; sourceTree = "<group>"; };
@@ -48,7 +49,9 @@
 		EA91F5BB2A40F55E00ECEB5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA91F5C02A40F55E00ECEB5A /* Invader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invader.entitlements; sourceTree = "<group>"; };
 		EAD3541F2B12698900F877A6 /* libi8080emulator_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator_ffi.a; path = "target/universal-apple-darwin/release/libi8080emulator_ffi.a"; sourceTree = "<group>"; };
-		EAD354212B1269B800F877A6 /* libi8080emulator_ffi_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator_ffi.a; path = "target/aarch64-apple-ios/release/libi8080emulator_ffi.a"; sourceTree = "<group>"; };
+		EAD354212B1269B800F877A6 /* libi8080emulator_ffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libi8080emulator_ffi.a; path = "target/aarch64-apple-ios/release/libi8080emulator_ffi.a"; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F60010000001 /* I8080Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I8080Machine.swift; sourceTree = "<group>"; };
+F1A2B3C4D5E6F70020000001 /* InvadersShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = InvadersShaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EAD354222B1269D000F877A6 /* libi8080emulator_ffi_ios.a in Frameworks */,
+				EAD354222B1269D000F877A6 /* libi8080emulator_ffi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +92,7 @@
 				EA5065692A4B6CC6005B939E /* CpuController.swift */,
 				EA3E67D22A88D9B90041C771 /* IOModelProtocol.swift */,
 				EA91F5B92A40F55D00ECEB5A /* InvadersView.swift */,
+				F1A2B3C4D5E6F70020000001 /* InvadersShaders.metal */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -96,7 +100,7 @@
 		EA3C66132A4B59D9002B87C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EAD354212B1269B800F877A6 /* libi8080emulator_ffi_ios.a */,
+				EAD354212B1269B800F877A6 /* libi8080emulator_ffi.a */,
 				EAD3541F2B12698900F877A6 /* libi8080emulator_ffi.a */,
 			);
 			name = Frameworks;
@@ -182,7 +186,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					EA2D3AAB2A72C5E300DC5F40 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -241,6 +245,7 @@
 			files = (
 				F0A1B2C3D4E5F60010000003 /* I8080Machine.swift in Sources */,
 				EA2D3ABE2A72C75A00DC5F40 /* InvadersView.swift in Sources */,
+				F1A2B3C4D5E6F70020000003 /* InvadersShaders.metal in Sources */,
 				EA3E67D42A88D9B90041C771 /* IOModelProtocol.swift in Sources */,
 				EA2D3ABF2A72C75C00DC5F40 /* CpuController.swift in Sources */,
 				EA91A9322A877E6A00BB119C /* ControlPanel.swift in Sources */,
@@ -258,6 +263,7 @@
 				EA3E67D32A88D9B90041C771 /* IOModelProtocol.swift in Sources */,
 				EA91A9342A8782A500BB119C /* KeyInputControlView.swift in Sources */,
 				EA91F5BA2A40F55D00ECEB5A /* InvadersView.swift in Sources */,
+				F1A2B3C4D5E6F70020000002 /* InvadersShaders.metal in Sources */,
 				EA91F5B82A40F55D00ECEB5A /* InvaderApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,7 +281,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -317,7 +322,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.simulation-games";
@@ -383,6 +387,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -405,6 +410,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -445,6 +451,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -460,6 +467,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -478,7 +486,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -515,7 +522,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = Z963V6P3ZK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

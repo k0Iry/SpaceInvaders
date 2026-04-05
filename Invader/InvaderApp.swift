@@ -10,17 +10,17 @@ import SwiftUI
 @main
 struct InvaderApp: App {
     private let cpuController: CpuController
-    @StateObject private var bitmapProducer: BitmapProducer
+    private let bitmapProducer: BitmapProducer
 
     init() {
         let cpuController = CpuController()
         self.cpuController = cpuController
-        _bitmapProducer = StateObject(wrappedValue: cpuController.bitmapProducer)
+        self.bitmapProducer = cpuController.bitmapProducer
     }
 
     var body: some Scene {
         WindowGroup {
-            InvadersView(bitmapImage: $bitmapProducer.bitmapImage)
+            InvadersView(bitmapProducer: bitmapProducer)
                 .frame(
                     minWidth: CGFloat(width),
                     maxWidth: .infinity,
