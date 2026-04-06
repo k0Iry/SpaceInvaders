@@ -38,7 +38,8 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
     private static let packedFrameBufferSize = width * (height / 8)
     private let commandQueue: MTLCommandQueue
     private let pipelineState: MTLRenderPipelineState
-    private let packedFrameBuffer: MTLBuffer
+    private var packedFrameBuffers: [MTLBuffer]
+    private var currentFrameBufferIndex = 0
     private var videoFramePipeline: VideoFramePipeline
     private var inverted: Bool
     private var lastFrameRevision: UInt64 = 0
@@ -59,7 +60,7 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
 
         guard let pipelineState = try? device.makeRenderPipelineState(descriptor: pipelineDescriptor),
-              let packedFrameBuffer = device.makeBuffer(length: Self.packedFrameBufferSize, options: .storageModeShared)
+              let packedFrameBuffers = Self.makePackedFrameBuffers(device: device, pointers: videoFramePipeline.packedFrameBufferPointers)
         else {
             return nil
         }
@@ -67,24 +68,38 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
         self.device = device
         self.commandQueue = commandQueue
         self.pipelineState = pipelineState
-        self.packedFrameBuffer = packedFrameBuffer
+        self.packedFrameBuffers = packedFrameBuffers
         self.videoFramePipeline = videoFramePipeline
         self.inverted = inverted
         super.init()
-
-        packedFrameBuffer.contents().initializeMemory(as: UInt8.self, repeating: 0, count: Self.packedFrameBufferSize)
     }
 
     func updateConfiguration(videoFramePipeline: VideoFramePipeline, inverted: Bool) {
+        if self.videoFramePipeline !== videoFramePipeline,
+           let packedFrameBuffers = Self.makePackedFrameBuffers(device: device, pointers: videoFramePipeline.packedFrameBufferPointers) {
+            self.packedFrameBuffers = packedFrameBuffers
+            self.currentFrameBufferIndex = 0
+            self.lastFrameRevision = 0
+        }
+
         self.videoFramePipeline = videoFramePipeline
         self.inverted = inverted
+    }
+
+    private static func makePackedFrameBuffers(device: MTLDevice, pointers: [UnsafeMutableRawPointer]) -> [MTLBuffer]? {
+        let buffers = pointers.compactMap {
+            device.makeBuffer(bytesNoCopy: $0, length: Self.packedFrameBufferSize, options: .storageModeShared, deallocator: nil)
+        }
+
+        guard buffers.count == pointers.count else { return nil }
+        return buffers
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        if let revision = videoFramePipeline.withLatestPackedFrameIfNeeded(after: lastFrameRevision, { frameBytes, revision in
-            packedFrameBuffer.contents().copyMemory(from: frameBytes, byteCount: Self.packedFrameBufferSize)
+        if let revision = videoFramePipeline.withLatestPackedFrameIfNeeded(after: lastFrameRevision, { bufferIndex, revision in
+            currentFrameBufferIndex = bufferIndex
             return revision
         }) {
             lastFrameRevision = revision
@@ -103,7 +118,7 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
         var invertAmount: Float = inverted ? 1.0 : 0.0
 
         encoder.setRenderPipelineState(pipelineState)
-        encoder.setFragmentBuffer(packedFrameBuffer, offset: 0, index: 0)
+        encoder.setFragmentBuffer(packedFrameBuffers[currentFrameBufferIndex], offset: 0, index: 0)
         encoder.setFragmentBytes(&invertAmount, length: MemoryLayout<Float>.size, index: 1)
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         encoder.endEncoding()

@@ -201,7 +201,7 @@ final internal class VideoFramePipeline {
     private var displayLink: CVDisplayLink?
 #endif
 
-    private let packedFrameSnapshot = UnsafeMutablePointer<UInt8>.allocate(capacity: width * (height / 8))
+    private let packedFrameBuffers: [UnsafeMutablePointer<UInt8>]
     private let videoRAM: UnsafePointer<UInt8>
     private let refreshMode: DisplayRefreshMode
     private let renderQueue = DispatchQueue(label: "SpaceInvaders.VideoFramePipeline", qos: .userInteractive)
@@ -211,6 +211,9 @@ final internal class VideoFramePipeline {
     private var hasFrameSnapshot = false
     private var renderInFlight = false
     private var publishedFrameRevision: UInt64 = 0
+    private var publishedFrameBufferIndex = 0
+
+    internal var onFrameAvailable: (() -> Void)?
 
 #if os(macOS)
     private func setupDisplayLink() {
@@ -253,25 +256,35 @@ final internal class VideoFramePipeline {
     init(videoRAM: UnsafePointer<UInt8>, refreshMode: DisplayRefreshMode) {
         self.refreshMode = refreshMode
         self.videoRAM = videoRAM
-        self.packedFrameSnapshot.initialize(repeating: 0, count: Self.packedFrameBufferSize)
+        self.packedFrameBuffers = (0..<2).map { _ in
+            let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Self.packedFrameBufferSize)
+            buffer.initialize(repeating: 0, count: Self.packedFrameBufferSize)
+            return buffer
+        }
 #if os(macOS)
         setupDisplayLink()
 #endif
     }
 
     deinit {
-        packedFrameSnapshot.deinitialize(count: Self.packedFrameBufferSize)
-        packedFrameSnapshot.deallocate()
+        for buffer in packedFrameBuffers {
+            buffer.deinitialize(count: Self.packedFrameBufferSize)
+            buffer.deallocate()
+        }
     }
 
     internal func withLatestPackedFrameIfNeeded<T>(
         after revision: UInt64,
-        _ body: (UnsafePointer<UInt8>, UInt64) -> T
+        _ body: (Int, UInt64) -> T
     ) -> T? {
         frameSnapshotLock.withLock {
             guard publishedFrameRevision != revision else { return nil }
-            return body(UnsafePointer(packedFrameSnapshot), publishedFrameRevision)
+            return body(publishedFrameBufferIndex, publishedFrameRevision)
         }
+    }
+
+    internal var packedFrameBufferPointers: [UnsafeMutableRawPointer] {
+        packedFrameBuffers.map { UnsafeMutableRawPointer($0) }
     }
 
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -302,20 +315,28 @@ final internal class VideoFramePipeline {
         }
 
         let didChange = frameSnapshotLock.withLock { () -> Bool in
+            let sourceIndex = publishedFrameBufferIndex
+            let targetIndex = (sourceIndex + 1) % packedFrameBuffers.count
+            let sourceBuffer = packedFrameBuffers[sourceIndex]
+            let targetBuffer = packedFrameBuffers[targetIndex]
+
+            targetBuffer.update(from: sourceBuffer, count: Self.packedFrameBufferSize)
+
             var didChange = !hasFrameSnapshot
 
             for packedIndex in 0..<Self.packedFrameBufferSize {
                 let pixel = videoRAM[packedIndex]
-                if hasFrameSnapshot, pixel == packedFrameSnapshot[packedIndex] {
+                if hasFrameSnapshot, pixel == sourceBuffer[packedIndex] {
                     continue
                 }
 
-                packedFrameSnapshot[packedIndex] = pixel
+                targetBuffer[packedIndex] = pixel
                 didChange = true
             }
 
             if didChange {
                 hasFrameSnapshot = true
+                publishedFrameBufferIndex = targetIndex
                 publishedFrameRevision &+= 1
             }
 
@@ -323,6 +344,7 @@ final internal class VideoFramePipeline {
         }
 
         guard didChange else { return }
+        onFrameAvailable?()
     }
 }
 
