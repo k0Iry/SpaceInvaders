@@ -23,7 +23,7 @@ final class I8080Machine {
     private var vblankInterrupt: UInt8 = 1
     private var cycleRemainderAccumulator: UInt64 = 0
 
-    var frameBuffer: UnsafePointer<UInt8> {
+    var videoRAM: UnsafePointer<UInt8> {
         UnsafePointer(ramStorage.advanced(by: 0x400))
     }
 
@@ -77,7 +77,7 @@ final class I8080Machine {
         }
     }
 
-    func runInterruptSlice(io: IoModelProtocol) -> MachineSliceResult {
+    func runVBlankSlice(io: IoModelProtocol) -> MachineSliceResult {
         let targetCycles = nextInterruptCycleBudget()
         let sliceStart = DispatchTime.now().uptimeNanoseconds
         var cyclesExecuted: UInt64 = 0

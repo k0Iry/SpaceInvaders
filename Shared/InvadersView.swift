@@ -18,12 +18,12 @@ let width = 224
 let height = 256
 
 struct InvadersView: View {
-    let bitmapProducer: BitmapProducer
+    let videoFramePipeline: VideoFramePipeline
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
         VStack {
-            PlatformInvadersView(bitmapProducer: bitmapProducer, inverted: colorScheme != .dark)
+            PlatformInvadersView(videoFramePipeline: videoFramePipeline, inverted: colorScheme != .dark)
                 .aspectRatio(CGSize(width: CGFloat(width), height: CGFloat(height)), contentMode: .fit)
         }
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -39,11 +39,11 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
     private let commandQueue: MTLCommandQueue
     private let pipelineState: MTLRenderPipelineState
     private let packedFrameBuffer: MTLBuffer
-    private var bitmapProducer: BitmapProducer
+    private var videoFramePipeline: VideoFramePipeline
     private var inverted: Bool
     private var lastFrameRevision: UInt64 = 0
 
-    init?(bitmapProducer: BitmapProducer, inverted: Bool) {
+    init?(videoFramePipeline: VideoFramePipeline, inverted: Bool) {
         guard let device = MTLCreateSystemDefaultDevice(),
               let commandQueue = device.makeCommandQueue(),
               let library = try? device.makeDefaultLibrary(bundle: .main),
@@ -68,22 +68,22 @@ private final class MetalInvadersRenderer: NSObject, MTKViewDelegate {
         self.commandQueue = commandQueue
         self.pipelineState = pipelineState
         self.packedFrameBuffer = packedFrameBuffer
-        self.bitmapProducer = bitmapProducer
+        self.videoFramePipeline = videoFramePipeline
         self.inverted = inverted
         super.init()
 
         packedFrameBuffer.contents().initializeMemory(as: UInt8.self, repeating: 0, count: Self.packedFrameBufferSize)
     }
 
-    func updateConfiguration(bitmapProducer: BitmapProducer, inverted: Bool) {
-        self.bitmapProducer = bitmapProducer
+    func updateConfiguration(videoFramePipeline: VideoFramePipeline, inverted: Bool) {
+        self.videoFramePipeline = videoFramePipeline
         self.inverted = inverted
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        if let revision = bitmapProducer.withLatestFrameIfNeeded(after: lastFrameRevision, { frameBytes, revision in
+        if let revision = videoFramePipeline.withLatestPackedFrameIfNeeded(after: lastFrameRevision, { frameBytes, revision in
             packedFrameBuffer.contents().copyMemory(from: frameBytes, byteCount: Self.packedFrameBufferSize)
             return revision
         }) {
@@ -165,11 +165,11 @@ private func configureMetalView(_ view: InvadersMetalView, renderer: MetalInvade
 
 #if os(iOS) || os(tvOS)
 private struct PlatformInvadersView: UIViewRepresentable {
-    let bitmapProducer: BitmapProducer
+    let videoFramePipeline: VideoFramePipeline
     let inverted: Bool
 
     func makeCoordinator() -> MetalInvadersRenderer {
-        guard let renderer = MetalInvadersRenderer(bitmapProducer: bitmapProducer, inverted: inverted) else {
+        guard let renderer = MetalInvadersRenderer(videoFramePipeline: videoFramePipeline, inverted: inverted) else {
             fatalError("Metal is unavailable on this device")
         }
         return renderer
@@ -182,16 +182,16 @@ private struct PlatformInvadersView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: InvadersMetalView, context: Context) {
-        context.coordinator.updateConfiguration(bitmapProducer: bitmapProducer, inverted: inverted)
+        context.coordinator.updateConfiguration(videoFramePipeline: videoFramePipeline, inverted: inverted)
     }
 }
 #elseif os(macOS)
 private struct PlatformInvadersView: NSViewRepresentable {
-    let bitmapProducer: BitmapProducer
+    let videoFramePipeline: VideoFramePipeline
     let inverted: Bool
 
     func makeCoordinator() -> MetalInvadersRenderer {
-        guard let renderer = MetalInvadersRenderer(bitmapProducer: bitmapProducer, inverted: inverted) else {
+        guard let renderer = MetalInvadersRenderer(videoFramePipeline: videoFramePipeline, inverted: inverted) else {
             fatalError("Metal is unavailable on this device")
         }
         return renderer
@@ -204,7 +204,7 @@ private struct PlatformInvadersView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: InvadersMetalView, context: Context) {
-        context.coordinator.updateConfiguration(bitmapProducer: bitmapProducer, inverted: inverted)
+        context.coordinator.updateConfiguration(videoFramePipeline: videoFramePipeline, inverted: inverted)
     }
 }
 #endif

@@ -113,7 +113,7 @@ final class CpuController: KeyInputControlDelegate {
     private var shouldStop = false
     private let ioObject = IoObject()
 
-    var bitmapProducer: BitmapProducer
+    var videoFramePipeline: VideoFramePipeline
 
     init(refreshMode: DisplayRefreshMode = .original60) {
         guard let romURL = Bundle.main.url(forResource: "invaders", withExtension: nil),
@@ -123,9 +123,8 @@ final class CpuController: KeyInputControlDelegate {
         }
 
         self.machine = I8080Machine(romData: romData)
-        self.bitmapProducer = BitmapProducer(frameBuffer: machine.frameBuffer, refreshMode: refreshMode)
-        self.bitmapProducer.keyInputDelegate = self
-
+        self.videoFramePipeline = VideoFramePipeline(videoRAM: machine.videoRAM, refreshMode: refreshMode)
+        
         Thread { [weak self] in
             self?.cpuLoop()
         }.start()
@@ -153,20 +152,20 @@ final class CpuController: KeyInputControlDelegate {
                 continue
             }
 
-            switch machine.runInterruptSlice(io: ioObject) {
+            switch machine.runVBlankSlice(io: ioObject) {
             case .running:
                 break
             case .halted:
                 stateLock.withLock {
                     isRunning = false
                 }
-                bitmapProducer.enableDisplayLink(false)
+                videoFramePipeline.setDisplayUpdatesEnabled(false)
             case .fault(let status):
                 assertionFailure("CPU slice failed with status \(status.rawValue)")
                 stateLock.withLock {
                     isRunning = false
                 }
-                bitmapProducer.enableDisplayLink(false)
+                videoFramePipeline.setDisplayUpdatesEnabled(false)
                 Thread.sleep(forTimeInterval: 0.001)
             }
         }
@@ -181,7 +180,7 @@ final class CpuController: KeyInputControlDelegate {
                 isRunning.toggle()
                 return isRunning
             }
-            bitmapProducer.enableDisplayLink(nowRunning)
+            videoFramePipeline.setDisplayUpdatesEnabled(nowRunning)
         default:
             ioObject.perform(action)
         }
@@ -192,45 +191,38 @@ final class CpuController: KeyInputControlDelegate {
     }
 }
 
-final internal class BitmapProducer {
+final internal class VideoFramePipeline {
     private static let bytesPerColumn = height / 8
     private static let packedFrameBufferSize = width * bytesPerColumn
-    private static let targetPresentationIntervalNs: UInt64 = 1_000_000_000 / 60
-
+    
 #if os(iOS) || os(tvOS) || os(watchOS)
     private var displayLink: CADisplayLink?
 #else
     private var displayLink: CVDisplayLink?
 #endif
 
-    private let latestFrameBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: width * (height / 8))
-    private let frameBuffer: UnsafePointer<UInt8>
+    private let packedFrameSnapshot = UnsafeMutablePointer<UInt8>.allocate(capacity: width * (height / 8))
+    private let videoRAM: UnsafePointer<UInt8>
     private let refreshMode: DisplayRefreshMode
-    private let renderQueue = DispatchQueue(label: "SpaceInvaders.BitmapProducer", qos: .userInteractive)
+    private let renderQueue = DispatchQueue(label: "SpaceInvaders.VideoFramePipeline", qos: .userInteractive)
     private let renderStateLock = NSLock()
-    private let publishStateLock = NSLock()
-    private let frameBufferLock = NSLock()
+    private let frameSnapshotLock = NSLock()
 
-    private var hasCachedFrame = false
+    private var hasFrameSnapshot = false
     private var renderInFlight = false
-    private var framePendingPresentation = false
-    private var publishScheduled = false
-    private var nextPublishDeadlineNs: UInt64 = 0
-    private var presentedFrameRevision: UInt64 = 0
-
-    internal weak var keyInputDelegate: KeyInputControlDelegate?
+    private var publishedFrameRevision: UInt64 = 0
 
 #if os(macOS)
     private func setupDisplayLink() {
         CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
         CVDisplayLinkSetOutputHandler(displayLink!) { (_, _, _, _, _) in
-            self.scheduleFrameRender()
+            self.scheduleFrameSnapshot()
             return kCVReturnSuccess
         }
     }
 #endif
 
-    internal func enableDisplayLink(_ enable: Bool) {
+    internal func setDisplayUpdatesEnabled(_ enable: Bool) {
         if enable {
 #if os(iOS) || os(tvOS) || os(watchOS)
             guard displayLink == nil else { return }
@@ -255,45 +247,40 @@ final internal class BitmapProducer {
             renderStateLock.withLock {
                 renderInFlight = false
             }
-            publishStateLock.withLock {
-                framePendingPresentation = false
-                publishScheduled = false
-                nextPublishDeadlineNs = 0
-            }
         }
     }
 
-    init(frameBuffer: UnsafePointer<UInt8>, refreshMode: DisplayRefreshMode) {
+    init(videoRAM: UnsafePointer<UInt8>, refreshMode: DisplayRefreshMode) {
         self.refreshMode = refreshMode
-        self.frameBuffer = frameBuffer
-        self.latestFrameBuffer.initialize(repeating: 0, count: Self.packedFrameBufferSize)
+        self.videoRAM = videoRAM
+        self.packedFrameSnapshot.initialize(repeating: 0, count: Self.packedFrameBufferSize)
 #if os(macOS)
         setupDisplayLink()
 #endif
     }
 
     deinit {
-        latestFrameBuffer.deinitialize(count: Self.packedFrameBufferSize)
-        latestFrameBuffer.deallocate()
+        packedFrameSnapshot.deinitialize(count: Self.packedFrameBufferSize)
+        packedFrameSnapshot.deallocate()
     }
 
-    internal func withLatestFrameIfNeeded<T>(
+    internal func withLatestPackedFrameIfNeeded<T>(
         after revision: UInt64,
         _ body: (UnsafePointer<UInt8>, UInt64) -> T
     ) -> T? {
-        frameBufferLock.withLock {
-            guard presentedFrameRevision != revision else { return nil }
-            return body(UnsafePointer(latestFrameBuffer), presentedFrameRevision)
+        frameSnapshotLock.withLock {
+            guard publishedFrameRevision != revision else { return nil }
+            return body(UnsafePointer(packedFrameSnapshot), publishedFrameRevision)
         }
     }
 
 #if os(iOS) || os(tvOS) || os(watchOS)
     @objc private func displayLinkFired() {
-        scheduleFrameRender()
+        scheduleFrameSnapshot()
     }
 #endif
 
-    private func scheduleFrameRender() {
+    private func scheduleFrameSnapshot() {
         let shouldSchedule = renderStateLock.withLock { () -> Bool in
             guard !renderInFlight else { return false }
             renderInFlight = true
@@ -303,98 +290,39 @@ final internal class BitmapProducer {
         guard shouldSchedule else { return }
 
         renderQueue.async { [weak self] in
-            self?.renderFrame()
+            self?.captureLatestFrameSnapshot()
         }
     }
 
-    private func renderFrame() {
+    private func captureLatestFrameSnapshot() {
         defer {
             renderStateLock.withLock {
                 renderInFlight = false
             }
         }
 
-        let didChange = frameBufferLock.withLock { () -> Bool in
-            var didChange = !hasCachedFrame
+        let didChange = frameSnapshotLock.withLock { () -> Bool in
+            var didChange = !hasFrameSnapshot
 
             for packedIndex in 0..<Self.packedFrameBufferSize {
-                let pixel = frameBuffer[packedIndex]
-                if hasCachedFrame, pixel == latestFrameBuffer[packedIndex] {
+                let pixel = videoRAM[packedIndex]
+                if hasFrameSnapshot, pixel == packedFrameSnapshot[packedIndex] {
                     continue
                 }
 
-                latestFrameBuffer[packedIndex] = pixel
+                packedFrameSnapshot[packedIndex] = pixel
                 didChange = true
             }
 
             if didChange {
-                hasCachedFrame = true
+                hasFrameSnapshot = true
+                publishedFrameRevision &+= 1
             }
 
             return didChange
         }
 
         guard didChange else { return }
-
-        markFramePendingForPresentation()
-    }
-
-    private func markFramePendingForPresentation() {
-        let delayNanoseconds = publishStateLock.withLock { () -> UInt64? in
-            framePendingPresentation = true
-
-            guard !publishScheduled else { return nil }
-
-            publishScheduled = true
-
-            let now = DispatchTime.now().uptimeNanoseconds
-            let deadline = max(now, nextPublishDeadlineNs)
-            return deadline - now
-        }
-
-        guard let delayNanoseconds else { return }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delayNanoseconds))) { [weak self] in
-            self?.publishLatestRenderedFrame()
-        }
-    }
-
-    private func publishLatestRenderedFrame() {
-        renderQueue.async { [weak self] in
-            self?.publishLatestFrameIfNeeded()
-        }
-    }
-
-    private func publishLatestFrameIfNeeded() {
-        let shouldPublish = publishStateLock.withLock { () -> Bool in
-            publishScheduled = false
-            guard framePendingPresentation else { return false }
-            framePendingPresentation = false
-            nextPublishDeadlineNs = DispatchTime.now().uptimeNanoseconds + Self.targetPresentationIntervalNs
-            return true
-        }
-
-        guard shouldPublish else { return }
-
-        frameBufferLock.withLock {
-            presentedFrameRevision &+= 1
-        }
-
-        let delayNanoseconds = publishStateLock.withLock { () -> UInt64? in
-            guard framePendingPresentation, !publishScheduled else { return nil }
-
-            publishScheduled = true
-
-            let now = DispatchTime.now().uptimeNanoseconds
-            let deadline = max(now, nextPublishDeadlineNs)
-            return deadline - now
-        }
-
-        guard let delayNanoseconds else { return }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delayNanoseconds))) { [weak self] in
-            self?.publishLatestRenderedFrame()
-        }
     }
 }
 

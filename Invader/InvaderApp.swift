@@ -10,17 +10,17 @@ import SwiftUI
 @main
 struct InvaderApp: App {
     private let cpuController: CpuController
-    private let bitmapProducer: BitmapProducer
+    private let videoFramePipeline: VideoFramePipeline
 
     init() {
         let cpuController = CpuController()
         self.cpuController = cpuController
-        self.bitmapProducer = cpuController.bitmapProducer
+        self.videoFramePipeline = cpuController.videoFramePipeline
     }
 
     var body: some Scene {
         WindowGroup {
-            InvadersView(bitmapProducer: bitmapProducer)
+            InvadersView(videoFramePipeline: videoFramePipeline)
                 .frame(
                     minWidth: CGFloat(width),
                     maxWidth: .infinity,

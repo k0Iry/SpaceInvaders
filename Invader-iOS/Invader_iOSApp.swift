@@ -3,19 +3,19 @@ import SwiftUI
 @main
 struct Invader_iOSApp: App {
     private let cpuController: CpuController
-    private let bitmapProducer: BitmapProducer
+    private let videoFramePipeline: VideoFramePipeline
 
     init() {
         let displayRefreshMode: DisplayRefreshMode = .original60
 
         let cpuController = CpuController(refreshMode: displayRefreshMode)
         self.cpuController = cpuController
-        self.bitmapProducer = cpuController.bitmapProducer
+        self.videoFramePipeline = cpuController.videoFramePipeline
     }
 
     var body: some Scene {
         WindowGroup {
-            InvadersView(bitmapProducer: bitmapProducer)
+            InvadersView(videoFramePipeline: videoFramePipeline)
                 .background(Color(.systemBackground))
                 .safeAreaInset(edge: .top, spacing: 8) {
                     ControlPanel(keyInputDelegate: cpuController)
