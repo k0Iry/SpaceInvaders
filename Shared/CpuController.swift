@@ -318,29 +318,18 @@ final internal class VideoFramePipeline {
             let sourceIndex = publishedFrameBufferIndex
             let targetIndex = (sourceIndex + 1) % packedFrameBuffers.count
             let sourceBuffer = packedFrameBuffers[sourceIndex]
+
+            if hasFrameSnapshot,
+               memcmp(videoRAM, sourceBuffer, Self.packedFrameBufferSize) == 0 {
+                return false
+            }
+
             let targetBuffer = packedFrameBuffers[targetIndex]
-
-            targetBuffer.update(from: sourceBuffer, count: Self.packedFrameBufferSize)
-
-            var didChange = !hasFrameSnapshot
-
-            for packedIndex in 0..<Self.packedFrameBufferSize {
-                let pixel = videoRAM[packedIndex]
-                if hasFrameSnapshot, pixel == sourceBuffer[packedIndex] {
-                    continue
-                }
-
-                targetBuffer[packedIndex] = pixel
-                didChange = true
-            }
-
-            if didChange {
-                hasFrameSnapshot = true
-                publishedFrameBufferIndex = targetIndex
-                publishedFrameRevision &+= 1
-            }
-
-            return didChange
+            targetBuffer.update(from: videoRAM, count: Self.packedFrameBufferSize)
+            hasFrameSnapshot = true
+            publishedFrameBufferIndex = targetIndex
+            publishedFrameRevision &+= 1
+            return true
         }
 
         guard didChange else { return }

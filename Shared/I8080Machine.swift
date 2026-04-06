@@ -80,56 +80,59 @@ final class I8080Machine {
     func runVBlankSlice(io: IoModelProtocol) -> MachineSliceResult {
         let targetCycles = nextInterruptCycleBudget()
         let sliceStart = DispatchTime.now().uptimeNanoseconds
-        var cyclesExecuted: UInt64 = 0
 
-        while cyclesExecuted < targetCycles {
-            var result = I8080StepResult(
-                cycles: 0,
-                state: I8080ExecutionState_Continue,
-                port: 0,
-                value: 0
-            )
-            let status = lock.withLock {
-                i8080_step(cpu, &result)
-            }
-            guard status == I8080Status_Ok else {
-                return .fault(status)
-            }
+        let result: MachineSliceResult = lock.withLock {
+            var cyclesExecuted: UInt64 = 0
 
-            cyclesExecuted &+= result.cycles
-
-            switch result.state {
-            case I8080ExecutionState_Input:
-                let input = io.input(port: result.port)
-                let inputStatus = lock.withLock {
-                    i8080_provide_input(cpu, input)
+            while cyclesExecuted < targetCycles {
+                var stepResult = I8080StepResult(
+                    cycles: 0,
+                    state: I8080ExecutionState_Continue,
+                    port: 0,
+                    value: 0
+                )
+                let status = i8080_step(cpu, &stepResult)
+                guard status == I8080Status_Ok else {
+                    return .fault(status)
                 }
-                guard inputStatus == I8080Status_Ok else {
-                    return .fault(inputStatus)
+
+                cyclesExecuted &+= stepResult.cycles
+
+                switch stepResult.state {
+                case I8080ExecutionState_Input:
+                    let input = io.input(port: stepResult.port)
+                    let inputStatus = i8080_provide_input(cpu, input)
+                    guard inputStatus == I8080Status_Ok else {
+                        return .fault(inputStatus)
+                    }
+                case I8080ExecutionState_Output:
+                    io.output(port: stepResult.port, value: stepResult.value)
+                case I8080ExecutionState_Halted:
+                    return .halted
+                default:
+                    break
                 }
-            case I8080ExecutionState_Output:
-                io.output(port: result.port, value: result.value)
-            case I8080ExecutionState_Halted:
-                paceSlice(sliceStart: sliceStart, cyclesExecuted: max(cyclesExecuted, 1))
-                return .halted
-            default:
-                break
             }
+
+            let interruptStatus = i8080_interrupt(cpu, vblankInterrupt)
+            guard interruptStatus == I8080Status_Ok else {
+                return .fault(interruptStatus)
+            }
+
+            vblankInterrupt = vblankInterrupt == 1 ? 2 : 1
+            return .running
         }
 
-        let interruptStatus = lock.withLock {
-            let status = i8080_interrupt(cpu, vblankInterrupt)
-            if status == I8080Status_Ok {
-                vblankInterrupt = vblankInterrupt == 1 ? 2 : 1
-            }
-            return status
-        }
-        guard interruptStatus == I8080Status_Ok else {
-            return .fault(interruptStatus)
+        switch result {
+        case .running:
+            paceSlice(sliceStart: sliceStart, cyclesExecuted: targetCycles)
+        case .halted:
+            paceSlice(sliceStart: sliceStart, cyclesExecuted: max(targetCycles, 1))
+        case .fault:
+            break
         }
 
-        paceSlice(sliceStart: sliceStart, cyclesExecuted: cyclesExecuted)
-        return .running
+        return result
     }
 
     private func nextInterruptCycleBudget() -> UInt64 {
