@@ -27,6 +27,19 @@ final class I8080Machine {
         UnsafePointer(ramStorage.advanced(by: 0x400))
     }
 
+    func readRAMBytes(offset: Int, count: Int) -> [UInt8] {
+        lock.withLock {
+            Array(UnsafeBufferPointer(start: UnsafePointer(ramStorage.advanced(by: offset)), count: count))
+        }
+    }
+
+    func writeRAMBytes(offset: Int, bytes: [UInt8]) {
+        guard !bytes.isEmpty else { return }
+        lock.withLock {
+            ramStorage.advanced(by: offset).update(from: bytes, count: bytes.count)
+        }
+    }
+
     init(romData: Data, ramLength: Int = 8192) {
         self.romLength = romData.count
         self.romStorage = UnsafeMutablePointer<UInt8>.allocate(capacity: max(romData.count, 1))

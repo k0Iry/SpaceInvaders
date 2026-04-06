@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct Invader_iOSApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     private let cpuController: CpuController
     private let videoFramePipeline: VideoFramePipeline
 
@@ -24,6 +25,14 @@ struct Invader_iOSApp: App {
                 .safeAreaInset(edge: .bottom, spacing: 12) {
                     PlayControl(keyInputDelegate: cpuController)
                         .background(.ultraThinMaterial)
+                }
+                .onChange(of: scenePhase) { _, newPhase in
+                    switch newPhase {
+                    case .inactive, .background:
+                        cpuController.persistHighScore()
+                    default:
+                        break
+                    }
                 }
         }
     }

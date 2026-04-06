@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct InvaderApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     private let cpuController: CpuController
     private let videoFramePipeline: VideoFramePipeline
 
@@ -28,6 +29,14 @@ struct InvaderApp: App {
                     maxHeight: .infinity
                 )
                 .background(KeyEvents(keyInputControlDelegate: cpuController))
+                .onChange(of: scenePhase) { _, newPhase in
+                    switch newPhase {
+                    case .inactive, .background:
+                        cpuController.persistHighScore()
+                    default:
+                        break
+                    }
+                }
         }
     }
 }

@@ -107,10 +107,15 @@ enum DisplayRefreshMode {
 }
 
 final class CpuController: KeyInputControlDelegate {
+    private static let highScoreRAMOffset = 0x0F4
+    private static let highScoreLength = 2
+    private static let highScoreDefaultsKey = "spaceinvaders.highscore.bytes"
+
     private let machine: I8080Machine
     private let stateLock = NSLock()
     private var isRunning = false
     private var shouldStop = false
+    private var pendingHighScoreRestorePasses = 0
     private let ioObject = IoObject()
 
     var videoFramePipeline: VideoFramePipeline
@@ -124,13 +129,16 @@ final class CpuController: KeyInputControlDelegate {
 
         self.machine = I8080Machine(romData: romData)
         self.videoFramePipeline = VideoFramePipeline(videoRAM: machine.videoRAM, refreshMode: refreshMode)
-        
+        restorePersistedHighScore()
+        scheduleHighScoreRestore()
+
         Thread { [weak self] in
             self?.cpuLoop()
         }.start()
     }
 
     deinit {
+        persistHighScore()
         stateLock.withLock {
             shouldStop = true
             isRunning = false
@@ -154,8 +162,9 @@ final class CpuController: KeyInputControlDelegate {
 
             switch machine.runVBlankSlice(io: ioObject) {
             case .running:
-                break
+                applyPendingHighScoreRestoreIfNeeded()
             case .halted:
+                applyPendingHighScoreRestoreIfNeeded()
                 stateLock.withLock {
                     isRunning = false
                 }
@@ -174,7 +183,10 @@ final class CpuController: KeyInputControlDelegate {
     func press(_ action: Action) {
         switch action {
         case .restart:
+            persistHighScore()
             machine.restart()
+            restorePersistedHighScore()
+            scheduleHighScoreRestore()
         case .pause:
             let nowRunning = stateLock.withLock {
                 isRunning.toggle()
@@ -188,6 +200,40 @@ final class CpuController: KeyInputControlDelegate {
 
     func release(_ action: Action) {
         ioObject.withdraw(action)
+    }
+
+    func persistHighScore() {
+        let bytes = machine.readRAMBytes(
+            offset: Self.highScoreRAMOffset,
+            count: Self.highScoreLength
+        )
+        UserDefaults.standard.set(bytes, forKey: Self.highScoreDefaultsKey)
+    }
+
+    private func restorePersistedHighScore() {
+        guard let bytes = UserDefaults.standard.array(forKey: Self.highScoreDefaultsKey) as? [UInt8],
+              bytes.count == Self.highScoreLength else {
+            return
+        }
+
+        machine.writeRAMBytes(offset: Self.highScoreRAMOffset, bytes: bytes)
+    }
+
+    private func scheduleHighScoreRestore() {
+        stateLock.withLock {
+            pendingHighScoreRestorePasses = max(pendingHighScoreRestorePasses, 2)
+        }
+    }
+
+    private func applyPendingHighScoreRestoreIfNeeded() {
+        let shouldRestore = stateLock.withLock { () -> Bool in
+            guard pendingHighScoreRestorePasses > 0 else { return false }
+            pendingHighScoreRestorePasses -= 1
+            return true
+        }
+
+        guard shouldRestore else { return }
+        restorePersistedHighScore()
     }
 }
 
